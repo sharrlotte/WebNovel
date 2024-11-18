@@ -11,6 +11,8 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import CategoryDto from 'src/services/category/dto/category.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('categories')
 export class CategoryController {
@@ -18,17 +20,22 @@ export class CategoryController {
 
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+    return plainToInstance(
+      CategoryDto,
+      this.categoryService.create(createCategoryDto),
+    );
   }
 
   @Get()
   findAll() {
-    return this.categoryService.findAll();
+    return this.categoryService
+      .findAll()
+      .then((items) => items.map((item) => plainToInstance(CategoryDto, item)));
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.categoryService.findOne(+id);
+    return plainToInstance(CategoryDto, this.categoryService.findOne(id));
   }
 
   @Patch(':id')
@@ -36,11 +43,14 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoryService.update(+id, updateCategoryDto);
+    return plainToInstance(
+      CategoryDto,
+      this.categoryService.update(id, updateCategoryDto),
+    );
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.categoryService.remove(+id);
+    return plainToInstance(CategoryDto, this.categoryService.remove(id));
   }
 }
