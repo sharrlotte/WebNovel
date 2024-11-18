@@ -32,6 +32,9 @@ model User {
     comments    Comment[]
     follows     Follow[]
     histories   History[]
+    Novel       Novel[]
+    isDeleted   Boolean
+    isBanned    Boolean
 }
 
 model Category {
@@ -59,12 +62,14 @@ model Novel {
     rating        Float?    @default(0.0)
     followerCount Int       @default(0)
     commentCount  Int       @default(0)
+    userId        Int
     chapters      Chapter[]
     ratings       Rating[]
     views         View[]
     comments      Comment[]
     follows       Follow[]
     histories     History[]
+    user          User      @relation(fields: [userId], references: [id])
 }
 
 model Chapter {
@@ -79,6 +84,7 @@ model Chapter {
 model Rating {
     id        Int      @id @default(autoincrement())
     novelId   Int
+    content   String
     score     Int      @default(1)
     createdAt DateTime @default(now())
     novel     Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
