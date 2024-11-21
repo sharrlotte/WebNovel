@@ -1,5 +1,6 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { NovelStatus } from '../novel-status.enum';
 
 export class CreateNovelDto {
   @ApiProperty({ example: 'Tên truyện', description: 'Tên truyện' })
@@ -7,12 +8,20 @@ export class CreateNovelDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: 'Mô tả truyện', description: 'Mô tả truyện', required: false })
+  @ApiProperty({
+    example: 'Mô tả truyện',
+    description: 'Mô tả truyện',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   description?: string;
 
-  @ApiProperty({ example: 'url_cover.jpg', description: 'Đường dẫn ảnh bìa', required: false })
+  @ApiProperty({
+    example: 'url_cover.jpg',
+    description: 'Đường dẫn ảnh bìa',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   cover?: string;
@@ -22,8 +31,16 @@ export class CreateNovelDto {
   @IsNotEmpty()
   author: string;
 
-  @ApiProperty({ example: 'Đang tiến hành', description: 'Trạng thái truyện' })
-  @IsString()
+  @ApiProperty({
+    example: NovelStatus.ONGOING,
+    description: 'Trạng thái truyện',
+    enum: NovelStatus,
+    enumName: 'NovelStatus',
+  })
+  @IsEnum(NovelStatus, {
+    message:
+      'Trạng thái truyện phải là: Đang tiến hành, Hoàn thành hoặc Tạm ngưng',
+  })
   @IsNotEmpty()
-  status: string;
+  status: NovelStatus;
 }
