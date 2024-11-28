@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { omit } from 'lodash';
 import { DatabaseService } from 'src/services/database/database.service';
 
 const authorities = [
@@ -12,7 +13,6 @@ const defaultAuthorities = authorities.map((authority, index) => ({
   id: index,
   name: authority,
   description: authority,
-  createdAt: new Date(),
 }));
 
 @Injectable()
@@ -25,8 +25,8 @@ export class AuthoritiesService implements OnModuleInit {
         where: {
           id: authority.id,
         },
-        create: authority,
-        update: authority,
+        create: omit(authority, ['id']),
+        update: omit(authority, ['id']),
       });
     });
   }

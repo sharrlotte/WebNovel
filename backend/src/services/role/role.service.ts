@@ -2,37 +2,33 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { DatabaseService } from 'src/services/database/database.service';
+import { omit } from 'lodash';
 
 const defaultRoles = [
   {
     id: 1,
     name: 'USER',
     description: 'User role',
-    createdAt: new Date(),
   },
   {
     id: 2,
     name: 'RECRUITER',
     description: 'Recruiter role',
-    createdAt: new Date(),
   },
   {
     id: 3,
     name: 'CANDIDATE',
     description: 'Candidate role',
-    createdAt: new Date(),
   },
   {
     id: 4,
     name: 'EMPLOYEE',
     description: 'Employee role',
-    createdAt: new Date(),
   },
   {
     id: 5,
     name: 'ADMIN',
     description: 'Admin role',
-    createdAt: new Date(),
   },
 ];
 
@@ -43,9 +39,9 @@ export class RoleService implements OnModuleInit {
   onModuleInit() {
     defaultRoles.forEach(async (role) => {
       await this.prismService.role.upsert({
-        where: { name: role.name, id: role.id },
-        create: role,
-        update: role,
+        where: { id: role.id },
+        create: omit(role, ['id']),
+        update: omit(role, ['id']),
       });
     });
   }
