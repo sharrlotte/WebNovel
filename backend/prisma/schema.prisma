@@ -7,6 +7,20 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model Account {
+    id         Int       @id @default(autoincrement())
+    userId     Int
+    provider   String
+    providerId String
+    updatedAt  DateTime? @db.Timestamp(6)
+    createdAt  DateTime  @db.Timestamp(6)
+    user       User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+    @@index([providerId])
+    @@index([provider])
+    @@index([userId])
+}
+
 model Role {
     id          Int             @id @default(autoincrement())
     name        String
@@ -33,6 +47,7 @@ model User {
     follows     Follow[]
     histories   History[]
     Novel       Novel[]
+    accounts    Account[]
     isDeleted   Boolean
     isBanned    Boolean
 }

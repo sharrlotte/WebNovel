@@ -1,21 +1,52 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { AuthModule } from 'src/services/auth/auth.module';
+import { RoleModule } from 'src/services/role/role.module';
+import { UsersModule } from 'src/services/users/users.module';
+import { CloudinaryModule } from './services/cloudinary/cloudinary.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { AuthMiddleware } from 'src/services/auth/auth.middleware';
+import { MemoryStoredFile, NestjsFormDataModule } from 'nestjs-form-data';
+import { AuthoritiesModule } from './services/authorities/authorities.module';
+import { RoleAuthoritiesModule } from './services/role-authorities/role-authorities.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CategoryModule } from './services/category/category.module';
 import { DatabaseModule } from 'src/services/database/database.module';
 import { GenesModule } from './services/genes/genes.module';
 import { NovelModule } from './services/novel/novel.module';
+import { ConfigModule } from '@nestjs/config';
+import appConfig from 'src/config/configuration';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: ['.env', '.development.env'],
+      cache: true,
+      load: [appConfig],
     }),
-    CategoryModule, DatabaseModule, GenesModule, NovelModule,
+    CloudinaryModule,
+    CategoryModule,
+    DatabaseModule,
+    GenesModule,
+    NovelModule,
+    NestjsFormDataModule.config({ isGlobal: true, storage: MemoryStoredFile }),
+    AuthModule,
+    UsersModule,
+    RoleModule,
+    CloudinaryModule,
+    MulterModule.register({
+      dest: './upload',
+    }),
+    AuthoritiesModule,
+    RoleAuthoritiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}
