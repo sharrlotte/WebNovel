@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateNovelDto } from './dto/create-novel.dto';
 import { UpdateNovelDto } from './dto/update-novel.dto';
 import { DatabaseService } from 'src/services/database/database.service';
@@ -9,7 +13,14 @@ export class NovelService {
 
   create(createNovelDto: CreateNovelDto) {
     return this.databaseService.novel.create({
-      data: { ...createNovelDto, userId: 0 },
+      data: {
+        ...createNovelDto,
+        userId: 0,
+        view: 0,
+        rating: 0,
+        followerCount: 0,
+        commentCount: 0,
+      },
     });
   }
 
@@ -34,11 +45,98 @@ export class NovelService {
     });
   }
 
-  update(id: number, updateNovelDto: UpdateNovelDto) {
-    return this.databaseService.novel.update({
-      where: { id },
-      data: updateNovelDto,
-    });
+  async update(id: number, updateNovelDto: UpdateNovelDto) {
+    try {
+      const currentNovel = await this.databaseService.novel.findUnique({
+        where: { id },
+      });
+
+      if (!currentNovel) {
+        throw new NotFoundException(`Novel với ID ${id} không tồn tại`);
+      }
+
+      // Kiểm tra ID
+      if (updateNovelDto.id && updateNovelDto.id !== currentNovel.id) {
+        throw new BadRequestException('Bạn không được phép sửa ID của truyện');
+      }
+
+      // Kiểm tra createdAt
+      if ('createdAt' in updateNovelDto) {
+        const currentDate = new Date(currentNovel.createdAt).getTime();
+        const updateDate = new Date(updateNovelDto.createdAt).getTime();
+
+        if (currentDate !== updateDate) {
+          throw new BadRequestException(
+            'Bạn không được phép sửa ngày tạo của truyện',
+          );
+        }
+      }
+
+      // Kiểm tra view
+      if (
+        'view' in updateNovelDto &&
+        updateNovelDto.view !== currentNovel.view
+      ) {
+        throw new BadRequestException(
+          'Bạn không được phép sửa số lượt xem của truyện',
+        );
+      }
+
+      // Kiểm tra updatedAt
+      if ('updatedAt' in updateNovelDto) {
+        const currentDate = new Date(currentNovel.updatedAt).getTime();
+        const updateDate = new Date(updateNovelDto.updatedAt).getTime();
+
+        if (currentDate !== updateDate) {
+          throw new BadRequestException(
+            'Bạn không được phép sửa ngày cập nhật của truyện',
+          );
+        }
+      }
+
+      // Kiểm tra rating
+      if (
+        'rating' in updateNovelDto &&
+        updateNovelDto.rating !== currentNovel.rating
+      ) {
+        throw new BadRequestException(
+          'Bạn không được phép sửa điểm đánh giá của truyện',
+        );
+      }
+
+      // Kiểm tra followerCount
+      if (
+        'followerCount' in updateNovelDto &&
+        updateNovelDto.followerCount !== currentNovel.followerCount
+      ) {
+        throw new BadRequestException(
+          'Bạn không được phép sửa số người theo dõi truyện',
+        );
+      }
+
+      // Kiểm tra commentCount
+      if (
+        'commentCount' in updateNovelDto &&
+        updateNovelDto.commentCount !== currentNovel.commentCount
+      ) {
+        throw new BadRequestException(
+          'Bạn không được phép sửa số lượng bình luận',
+        );
+      }
+
+      return await this.databaseService.novel.update({
+        where: { id },
+        data: updateNovelDto,
+      });
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+      throw new BadRequestException('Không thể sửa UserId.');
+    }
   }
 
   remove(id: number) {
