@@ -1,8 +1,10 @@
 import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { NovelStatus } from '../novel-status.enum';
+import { Expose } from 'class-transformer';
 
 export class CreateNovelDto {
+  @Expose()
   @ApiProperty({ example: 'Tên truyện', description: 'Tên truyện' })
   @IsString()
   @IsNotEmpty()
@@ -15,6 +17,7 @@ export class CreateNovelDto {
   })
   @IsString()
   @IsOptional()
+  @Expose()
   description?: string;
 
   @ApiProperty({
@@ -24,11 +27,13 @@ export class CreateNovelDto {
   })
   @IsString()
   @IsOptional()
+  @Expose()
   cover?: string;
 
   @ApiProperty({ example: 'Tên tác giả', description: 'Tên tác giả' })
   @IsString()
   @IsNotEmpty()
+  @Expose()
   author: string;
 
   @ApiProperty({
@@ -41,6 +46,7 @@ export class CreateNovelDto {
     message:
       'Trạng thái truyện phải là: Đang tiến hành, Hoàn thành hoặc Tạm ngưng',
   })
+  @Expose()
   @IsNotEmpty()
   status: NovelStatus;
 }
