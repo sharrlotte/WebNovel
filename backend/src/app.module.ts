@@ -16,6 +16,7 @@ import { DatabaseModule } from 'src/services/database/database.module';
 import { GenesModule } from './services/genes/genes.module';
 import { NovelModule } from './services/novel/novel.module';
 import { ConfigModule } from '@nestjs/config';
+import { ChaptersModule } from './services/chapters/chapters.module';
 import appConfig from 'src/config/configuration';
 
 @Module({
@@ -41,6 +42,7 @@ import appConfig from 'src/config/configuration';
     }),
     AuthoritiesModule,
     RoleAuthoritiesModule,
+    ChaptersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
