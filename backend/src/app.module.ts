@@ -17,6 +17,7 @@ import { GenesModule } from './services/genes/genes.module';
 import { NovelModule } from './services/novel/novel.module';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from 'src/config/configuration';
+import { GoogleModule } from 'src/services/google/google.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import appConfig from 'src/config/configuration';
     }),
     AuthoritiesModule,
     RoleAuthoritiesModule,
+    GoogleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

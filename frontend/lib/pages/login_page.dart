@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/google_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -73,7 +74,8 @@ class LoginPageState extends State<LoginPage> {
                       TextField(
                         decoration: InputDecoration(
                           hintText: 'Email / Tên đăng nhập',
-                          prefixIcon: Icon(Icons.email, color: Colors.green[700]),
+                          prefixIcon:
+                              Icon(Icons.email, color: Colors.green[700]),
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
@@ -82,11 +84,13 @@ class LoginPageState extends State<LoginPage> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
-                            borderSide: BorderSide(color: Colors.green.shade200),
+                            borderSide:
+                                BorderSide(color: Colors.green.shade200),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(color: Colors.green, width: 2),
+                            borderSide:
+                                const BorderSide(color: Colors.green, width: 2),
                           ),
                         ),
                       ),
@@ -96,10 +100,13 @@ class LoginPageState extends State<LoginPage> {
                         obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
                           hintText: 'Mật khẩu',
-                          prefixIcon: Icon(Icons.lock, color: Colors.green[700]),
+                          prefixIcon:
+                              Icon(Icons.lock, color: Colors.green[700]),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                               color: Colors.green[700],
                             ),
                             onPressed: () {
@@ -116,11 +123,13 @@ class LoginPageState extends State<LoginPage> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
-                            borderSide: BorderSide(color: Colors.green.shade200),
+                            borderSide:
+                                BorderSide(color: Colors.green.shade200),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(color: Colors.green, width: 2),
+                            borderSide:
+                                const BorderSide(color: Colors.green, width: 2),
                           ),
                         ),
                       ),
@@ -183,7 +192,8 @@ class LoginPageState extends State<LoginPage> {
                         children: [
                           const Text("Bạn chưa có tài khoản? "),
                           GestureDetector(
-                            onTap:() => Navigator.pushNamed(context,'/register'),
+                            onTap: () =>
+                                Navigator.pushNamed(context, '/register'),
                             child: const Text(
                               'Đăng ký',
                               style: TextStyle(
@@ -194,6 +204,7 @@ class LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
+                      const GoogleButton()
                     ],
                   ),
                 ),
