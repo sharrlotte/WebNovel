@@ -4,10 +4,18 @@
   import '../components/custom_app_bar.dart';
   import '../components/slider.dart';
   import 'package:logger/logger.dart';
+  import '../components/novel_filters.dart';
 
 
-  class HomePage extends StatelessWidget {
-    HomePage({super.key});
+  class HomePage extends StatefulWidget {
+    const HomePage({super.key});
+    @override
+    State<HomePage> createState() => _HomePageState();
+  }
+
+  class _HomePageState extends State<HomePage> {
+    String _selectedSortTag = 'newest';
+    String _selectedGenre = 'all';
 
     final List<Map<String, dynamic>> _novels = [
       {
@@ -51,6 +59,10 @@
 
     final logger = Logger();
 
+    List<Map<String, dynamic>> get filteredNovels {
+      return _novels;
+    }
+
     @override
     Widget build(BuildContext context) {
       return Scaffold(
@@ -76,18 +88,22 @@
             children: [
               const MainSlider(),
               RankingNovel(),
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Truyện Mới Cập Nhật',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              NovelFilters(
+                selectedSortTag: _selectedSortTag,
+                selectedGenre: _selectedGenre,
+                onSortTagChanged: (tag) {
+                  setState(() {
+                    _selectedSortTag = tag;
+                  });
+                },
+                onGenreChanged: (genre) {
+                  setState(() {
+                    _selectedGenre = genre;
+                  });
+                },
               ),
               SizedBox(
-                height: 250, // Chiều cao cố định
+                height: 250,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
