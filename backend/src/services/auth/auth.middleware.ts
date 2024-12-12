@@ -24,6 +24,7 @@ export class AuthMiddleware implements NestMiddleware {
       });
 
       //@ts-ignore
+      req['user'] = { ...payload, id: +sub };
       request['user'] = { ...payload, id: +sub };
     } catch (error) {
       //TODO: Secure
