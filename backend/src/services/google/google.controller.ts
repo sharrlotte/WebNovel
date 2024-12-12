@@ -11,6 +11,8 @@ import { AppConfig } from 'src/config/configuration';
 import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from 'src/services/users/users.service';
 import { JwtAuthService } from 'src/services/jwt/jwt.service';
+import { plainToInstance } from 'class-transformer';
+import { GoogleAuthResponse } from 'src/services/google/google.auth.dto';
 
 @Controller('auth/google')
 @Injectable()
@@ -57,6 +59,6 @@ export class GoogleOauthController {
       });
     }
 
-    return { accessToken: this.jwtService.login(user) };
+    return plainToInstance(GoogleAuthResponse, this.jwtService.login(user));
   }
 }

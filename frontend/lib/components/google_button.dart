@@ -11,7 +11,7 @@ class GoogleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<SessionCubit>();
 
-    if (cubit.state is Unauthenticated) {
+    if (cubit.state is! Authenticated) {
       return ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,

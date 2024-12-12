@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/session.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -33,7 +34,7 @@ class SessionCubit extends Cubit<SessionState> {
 
         if (idToken != null) {
           final response = await Dio().post(
-            'https://your-api-url/auth/google',
+            '${dotenv.env['API_URL']}/auth/google',
             data: {'idToken': idToken},
           );
 
