@@ -32,6 +32,10 @@ const appConfig = () => ({
       clientSecret: process.env.GITHUB_OAUTH_CLIENT_SECRET as string,
       callbackURL: process.env.GITHUB_OAUTH_CALLBACK_URL as string,
     },
+    google: {
+      clientId: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,
+    },
   },
   cloudinary: {
     secret: process.env.CLOUDINARY_SECRET as string,

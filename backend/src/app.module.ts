@@ -19,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ChaptersModule } from './services/chapters/chapters.module';
 import { CommentsModule } from './services/comments/comments.module';
 import appConfig from 'src/config/configuration';
+import { GoogleModule } from 'src/services/google/google.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import appConfig from 'src/config/configuration';
     }),
     AuthoritiesModule,
     RoleAuthoritiesModule,
+    GoogleModule,
     ChaptersModule,
     CommentsModule,
   ],
