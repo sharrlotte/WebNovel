@@ -41,6 +41,8 @@ class GoogleButton extends StatelessWidget {
         );
       }
 
+      var avatar = session.session.user!.avatar;
+
       return ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
@@ -51,7 +53,14 @@ class GoogleButton extends StatelessWidget {
           onPressed: () {
             context.read<SessionCubit>().signOut();
           },
-          child: Text("Đã đăng nhập, Đăng xuất?"));
+          child: Flex(direction: Axis.vertical, children: [
+            Text("Đã đăng nhập ${session.session.user!.name} , Đăng xuất?"),
+            avatar != null
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(avatar),
+                  )
+                : Text("")
+          ]));
     });
   }
 }

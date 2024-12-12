@@ -48,17 +48,20 @@ export class GoogleOauthController {
       throw new HttpException('Invalid token', 400);
     }
 
-    const { sub, name, profile } = data;
+    const { sub, name, picture } = data;
 
     let user = await this.usersService.find(sub, 'google');
 
     if (!user) {
       user = await this.usersService.create(sub, 'google', {
         name: name,
-        profileUrl: profile,
+        profileUrl: picture,
       });
     }
 
-    return plainToInstance(GoogleAuthResponse, this.jwtService.login(user));
+    return plainToInstance(GoogleAuthResponse, {
+      ...this.jwtService.login(user),
+      user: { ...user, avatar: picture },
+    });
   }
 }

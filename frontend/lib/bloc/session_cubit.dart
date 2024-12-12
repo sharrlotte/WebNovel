@@ -20,11 +20,10 @@ class Unauthenticated extends SessionState {}
 
 class SessionCubit extends Cubit<SessionState> {
   SessionCubit() : super(SessionInitial());
+  GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
 
   Future<void> signInWithGoogle() async {
     emit(SessionLoading());
-
-    GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
 
     try {
       final googleUser = await googleSignIn.signIn();
@@ -51,7 +50,8 @@ class SessionCubit extends Cubit<SessionState> {
     }
   }
 
-  void signOut() {
+  Future<void> signOut() async {
     emit(Unauthenticated());
+      await googleSignIn.signOut();
   }
 }
