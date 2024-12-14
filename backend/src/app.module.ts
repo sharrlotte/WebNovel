@@ -21,6 +21,8 @@ import { CommentsModule } from './services/comments/comments.module';
 import appConfig from 'src/config/configuration';
 import { GoogleModule } from 'src/services/google/google.module';
 import { FollowsModule } from './services/follows/follows.module';
+import { RatingsModule } from './services/ratings/ratings.module';
+import { HistorysModule } from './services/historys/historys.module';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { FollowsModule } from './services/follows/follows.module';
     ChaptersModule,
     CommentsModule,
     FollowsModule,
+    RatingsModule,
+    HistorysModule,
   ],
   controllers: [AppController],
   providers: [AppService],
