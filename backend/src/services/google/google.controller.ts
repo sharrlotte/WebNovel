@@ -11,6 +11,8 @@ import { AppConfig } from 'src/config/configuration';
 import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from 'src/services/users/users.service';
 import { JwtAuthService } from 'src/services/jwt/jwt.service';
+import { plainToInstance } from 'class-transformer';
+import { GoogleAuthResponse } from 'src/services/google/google.auth.dto';
 
 @Controller('auth/google')
 @Injectable()
@@ -46,17 +48,20 @@ export class GoogleOauthController {
       throw new HttpException('Invalid token', 400);
     }
 
-    const { sub, name, profile } = data;
+    const { sub, name, picture } = data;
 
     let user = await this.usersService.find(sub, 'google');
 
     if (!user) {
       user = await this.usersService.create(sub, 'google', {
         name: name,
-        profileUrl: profile,
+        profileUrl: picture,
       });
     }
 
-    return { accessToken: this.jwtService.login(user) };
+    return plainToInstance(GoogleAuthResponse, {
+      ...this.jwtService.login(user),
+      user: { ...user, avatar: picture },
+    });
   }
 }

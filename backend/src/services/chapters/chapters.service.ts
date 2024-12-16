@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateChapterDto } from './dto/create-chapter.dto';
 import { UpdateChapterDto } from './dto/update-chapter.dto';
 import { DatabaseService } from 'src/services/database/database.service';
@@ -12,13 +17,15 @@ export class ChaptersService {
       where: {
         AND: [
           { name: createChapterDto.name },
-          { novelId: createChapterDto.novelId }
-        ]
-      }
+          { novelId: createChapterDto.novelId },
+        ],
+      },
     });
 
     if (existingChapter) {
-      throw new ConflictException('Chapter với tên này đã tồn tại trong novel này');
+      throw new ConflictException(
+        'Chapter với tên này đã tồn tại trong novel này',
+      );
     }
 
     return this.databaseService.chapter.create({
@@ -36,7 +43,7 @@ export class ChaptersService {
       });
 
       if (!chapters || chapters.length === 0) {
-        return []; 
+        return [];
       }
 
       return chapters;
@@ -69,12 +76,41 @@ export class ChaptersService {
 
   async update(id: number, updateChapterDto: UpdateChapterDto) {
     try {
+      const currentChapter = await this.databaseService.chapter.findUnique({
+        where: { id },
+      });
+
+      if (!currentChapter) {
+        throw new NotFoundException(`Chapter với ID ${id} không tồn tại`);
+      }
+
+      if (updateChapterDto.id && updateChapterDto.id !== currentChapter.id) {
+        throw new BadRequestException('Bạn không được phép sửa ID chapter');
+      }
+
+      if ('createdAt' in updateChapterDto) {
+        const currentDate = new Date(currentChapter.createdAt).getTime();
+        const updateDate = new Date(updateChapterDto.createdAt).getTime();
+
+        if (currentDate !== updateDate) {
+          throw new BadRequestException(
+            'Bạn không được phép sửa ngày tạo chapter',
+          );
+        }
+      }
+
       return await this.databaseService.chapter.update({
         where: { id },
-        data: updateChapterDto,
+        data: { name: updateChapterDto.name },
       });
     } catch (error) {
-      throw new NotFoundException(`Chapter with ID ${id} not found`);
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+      throw new NotFoundException(`Chapter với ID ${id} không tồn tại`);
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/session.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -19,11 +20,10 @@ class Unauthenticated extends SessionState {}
 
 class SessionCubit extends Cubit<SessionState> {
   SessionCubit() : super(SessionInitial());
+  GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
 
   Future<void> signInWithGoogle() async {
     emit(SessionLoading());
-
-    GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
 
     try {
       final googleUser = await googleSignIn.signIn();
@@ -33,7 +33,7 @@ class SessionCubit extends Cubit<SessionState> {
 
         if (idToken != null) {
           final response = await Dio().post(
-            'https://your-api-url/auth/google',
+            '${dotenv.env['API_URL']}/auth/google',
             data: {'idToken': idToken},
           );
 
@@ -50,7 +50,8 @@ class SessionCubit extends Cubit<SessionState> {
     }
   }
 
-  void signOut() {
+  Future<void> signOut() async {
     emit(Unauthenticated());
+      await googleSignIn.signOut();
   }
 }

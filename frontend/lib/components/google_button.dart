@@ -9,38 +9,58 @@ class GoogleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<SessionCubit>();
+    return BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
+      if (session is! Authenticated) {
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onPressed: () async {
+            final cubit = context.read<SessionCubit>();
+            await cubit.signInWithGoogle();
+          },
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 32,
+                ),
+                SizedBox(
+                  width: 40,
+                ),
+                Text(
+                  'Login With Google',
+                ),
+              ],
+            ),
+          ),
+        );
+      }
 
-    if (cubit.state is Unauthenticated) {
+      var avatar = session.session.user!.avatar;
+
       return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
-        ),
-        onPressed: () async {
-          await cubit.signInWithGoogle();
-        },
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 32,
-              ),
-              SizedBox(
-                width: 40,
-              ),
-              Text(
-                'Login With Google',
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return const Text("Đã đăng nhập");
+          onPressed: () {
+            context.read<SessionCubit>().signOut();
+          },
+          child: Flex(direction: Axis.vertical, children: [
+            Text("Đã đăng nhập ${session.session.user!.name} , Đăng xuất?"),
+            avatar != null
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(avatar),
+                  )
+                : Text("")
+          ]));
+    });
   }
 }

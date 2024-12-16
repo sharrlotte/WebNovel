@@ -12,7 +12,7 @@ import { NovelService } from './novel.service';
 import { CreateNovelDto } from './dto/create-novel.dto';
 import { UpdateNovelDto } from './dto/update-novel.dto';
 import NovelDto from './dto/novel.dto';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 
 @Controller('novels')
 export class NovelController {
@@ -22,7 +22,11 @@ export class NovelController {
   create(@Body() createNovelDto: CreateNovelDto) {
     return plainToInstance(
       NovelDto,
-      this.novelService.create(createNovelDto),
+      this.novelService.create(
+        plainToClass(CreateNovelDto, createNovelDto, {
+          strategy: 'excludeAll',
+        }),
+      ),
     );
   }
 
