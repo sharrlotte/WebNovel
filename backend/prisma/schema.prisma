@@ -50,6 +50,7 @@ model User {
     accounts    Account[]
     isDeleted   Boolean
     isBanned    Boolean
+    Rating      Rating[]
 }
 
 model Category {
