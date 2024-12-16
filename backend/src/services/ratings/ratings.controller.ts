@@ -13,6 +13,7 @@ import RatingDto from './dto/rating.dto';
 import { plainToInstance } from 'class-transformer';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { getSession } from '../auth/auth.utils';
 
 @ApiTags('ratings')
 @Controller('ratings')
@@ -21,9 +22,10 @@ export class RatingsController {
 
   @Post()
   create(@Body() createRatingDto: CreateRatingDto, @Req() req: Request) {
+    const session = getSession(req);
     return plainToInstance(
       RatingDto,
-      this.ratingsService.create(createRatingDto),
+      this.ratingsService.create(createRatingDto, session.id),
     );
   }
 

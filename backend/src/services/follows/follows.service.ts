@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CreateFollowDto } from './dto/create-follow.dto';
 import { UpdateFollowDto } from './dto/update-follow.dto';
@@ -7,7 +7,7 @@ import { UpdateFollowDto } from './dto/update-follow.dto';
 export class FollowsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(createFollowDto: CreateFollowDto) {
+  async create(createFollowDto: CreateFollowDto, userId: number) {
     // Kiểm tra novel tồn tại
     const novel = await this.databaseService.novel.findUnique({
       where: { id: createFollowDto.novelId },
@@ -22,7 +22,7 @@ export class FollowsService {
       where: {
         AND: [
           { novelId: createFollowDto.novelId },
-          { userId: 0 }, // Tạm thời hardcode, sau này sẽ lấy từ session
+          { userId: userId },
         ],
       },
     });
@@ -34,8 +34,8 @@ export class FollowsService {
     return this.databaseService.follow.create({
       data: {
         novelId: createFollowDto.novelId,
-        userId: 0, // Tạm thời hardcode, sau này sẽ lấy từ session
-        createdAt: new Date(), // Tự động tạo thời gian
+        userId: userId,
+        createdAt: new Date(),
       },
       include: {
         novel: true,
@@ -71,13 +71,17 @@ export class FollowsService {
 
   // Không cần phương thức update vì người dùng chỉ cần thêm/xóa follow
 
-  async remove(id: number) {
+  async remove(id: number, userId: number) {
     const follow = await this.databaseService.follow.findUnique({
       where: { id },
     });
 
     if (!follow) {
       throw new NotFoundException(`Follow với ID ${id} không tồn tại`);
+    }
+
+    if (follow.userId !== userId) {
+      throw new ForbiddenException('Bạn không có quyền xóa follow này');
     }
 
     return this.databaseService.follow.delete({

@@ -11,7 +11,7 @@ export class CreateRatingDto {
   @IsNotEmpty({ message: 'Nội dung không được để trống' })
   content: string;
 
-  @ApiProperty({ example: 5, description: 'Điểm đánh giá (0-5)', minimum: 0, maximum: 5 })
+  @ApiProperty({ example: 5, description: 'Điểm đánh giá (0-5)' })
   @IsNumber({}, { message: 'Điểm đánh giá phải là số' })
   @Min(0, { message: 'Điểm đánh giá phải từ 0-5 sao' })
   @Max(5, { message: 'Điểm đánh giá phải từ 0-5 sao' })

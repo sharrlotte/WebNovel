@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CreateHistoryDto } from './dto/create-history.dto';
 import { UpdateHistoryDto } from './dto/update-history.dto';
@@ -7,9 +7,7 @@ import { UpdateHistoryDto } from './dto/update-history.dto';
 export class HistorysService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(createHistoryDto: CreateHistoryDto) {
-    const userId = 1; // Tạm thời hardcode
-
+  async create(createHistoryDto: CreateHistoryDto, userId: number) {
     // Kiểm tra novel tồn tại
     const novel = await this.databaseService.novel.findUnique({
       where: { id: createHistoryDto.novelId },
@@ -56,13 +54,17 @@ export class HistorysService {
     return history;
   }
 
-  async remove(id: number) {
+  async remove(id: number, userId: number) {
     const history = await this.databaseService.history.findUnique({
       where: { id },
     });
 
     if (!history) {
       throw new NotFoundException(`History với ID ${id} không tồn tại`);
+    }
+
+    if (history.userId !== userId) {
+      throw new ForbiddenException('Bạn không có quyền xóa history này');
     }
 
     return this.databaseService.history.delete({

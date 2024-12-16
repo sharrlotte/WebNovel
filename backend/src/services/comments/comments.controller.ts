@@ -28,12 +28,10 @@ export class CommentsController {
     @Req() req: Request,
   ) {
     const session = getSession(req);
-
-    const result = await this.commentsService.create(
-      createCommentDto,
-      session.id,
+    return plainToInstance(
+      CommentDto,
+      this.commentsService.create(createCommentDto, session.id),
     );
-    return plainToInstance(CommentDto, result);
   }
 
   @Get()
@@ -52,7 +50,6 @@ export class CommentsController {
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const session = getSession(req);
-
     try {
       return await this.commentsService.remove(id, session.id);
     } catch (error) {
