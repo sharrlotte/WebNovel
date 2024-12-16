@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateNovelDto } from './dto/create-novel.dto';
 import { UpdateNovelDto } from './dto/update-novel.dto';
@@ -11,11 +12,11 @@ import { DatabaseService } from 'src/services/database/database.service';
 export class NovelService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  create(createNovelDto: CreateNovelDto) {
+  async create(createNovelDto: CreateNovelDto, userId: number) {
     return this.databaseService.novel.create({
       data: {
         ...createNovelDto,
-        userId: 0,
+        userId,
         view: 0,
         rating: 0,
         followerCount: 0,
@@ -45,7 +46,11 @@ export class NovelService {
     });
   }
 
-  async update(id: number, updateNovelDto: UpdateNovelDto) {
+  async update(id: number, updateNovelDto: UpdateNovelDto, userId: number) {
+    const novel = await this.findOne(id);
+    if (novel.userId !== userId) {
+      throw new ForbiddenException('Bạn không có quyền sửa novel này');
+    }
     try {
       const currentNovel = await this.databaseService.novel.findUnique({
         where: { id },
@@ -139,7 +144,11 @@ export class NovelService {
     }
   }
 
-  remove(id: number) {
+  async remove(id: number, userId: number) {
+    const novel = await this.findOne(id);
+    if (novel.userId !== userId) {
+      throw new ForbiddenException('Bạn không có quyền xóa novel này');
+    }
     return this.databaseService.novel.delete({
       where: { id },
     });

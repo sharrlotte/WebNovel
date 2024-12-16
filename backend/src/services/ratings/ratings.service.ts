@@ -2,7 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
-  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
@@ -11,12 +11,7 @@ import { CreateRatingDto } from './dto/create-rating.dto';
 export class RatingsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(createRatingDto: CreateRatingDto) {
-    // Tạm thời comment lại check login vì chưa có auth
-    // if (!userId) {
-    //   throw new UnauthorizedException('Bạn cần đăng nhập để đánh giá');
-    // }
-
+  async create(createRatingDto: CreateRatingDto, userId: number) {
     // Kiểm tra novel tồn tại
     const novel = await this.databaseService.novel.findUnique({
       where: { id: createRatingDto.novelId },
@@ -31,7 +26,10 @@ export class RatingsService {
     // Kiểm tra xem đã đánh giá chưa
     const existingRating = await this.databaseService.rating.findFirst({
       where: {
-        novelId: createRatingDto.novelId,
+        AND: [
+          { novelId: createRatingDto.novelId },
+          { userId: userId },
+        ],
       },
     });
 
@@ -44,12 +42,14 @@ export class RatingsService {
     return this.databaseService.rating.create({
       data: {
         novelId: createRatingDto.novelId,
+        userId: userId,
         content: createRatingDto.content.trim(),
         score: createRatingDto.score,
         createdAt: new Date(),
       },
       include: {
         novel: true,
+        user: true,
       },
     });
   }
@@ -58,6 +58,7 @@ export class RatingsService {
     return this.databaseService.rating.findMany({
       include: {
         novel: true,
+        user: true,
       },
     });
   }
@@ -67,6 +68,7 @@ export class RatingsService {
       where: { id },
       include: {
         novel: true,
+        user: true,
       },
     });
 

@@ -6,23 +6,27 @@ import {
   Delete,
   Param,
   ParseIntPipe,
+  Req,
 } from '@nestjs/common';
 import { HistorysService } from './historys.service';
 import { CreateHistoryDto } from './dto/create-history.dto';
 import HistoryDto from './dto/history.dto';
 import { plainToInstance } from 'class-transformer';
 import { ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
+import { getSession } from '../auth/auth.utils';
 
-@ApiTags('historys')
-@Controller('historys')
+@ApiTags('history')
+@Controller('history')
 export class HistorysController {
   constructor(private readonly historysService: HistorysService) {}
 
   @Post()
-  create(@Body() createHistoryDto: CreateHistoryDto) {
+  create(@Body() createHistoryDto: CreateHistoryDto, @Req() req: Request) {
+    const session = getSession(req);
     return plainToInstance(
       HistoryDto,
-      this.historysService.create(createHistoryDto),
+      this.historysService.create(createHistoryDto, session.id),
     );
   }
 
@@ -39,7 +43,8 @@ export class HistorysController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return plainToInstance(HistoryDto, this.historysService.remove(id));
+  remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    const session = getSession(req);
+    return plainToInstance(HistoryDto, this.historysService.remove(id, session.id));
   }
 }
