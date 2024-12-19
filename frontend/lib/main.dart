@@ -48,7 +48,7 @@ class NavScaffold extends StatelessWidget {
               case "/":
                 Navigator.pushNamed(context, '/');
                 break;
-                
+
               case "login":
                 Navigator.pushNamed(context, '/login');
                 break;

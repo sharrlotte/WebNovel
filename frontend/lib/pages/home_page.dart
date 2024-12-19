@@ -89,7 +89,6 @@ class _HomePageState extends State<HomePage> {
               height: 250,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: _novels.length,
                 itemBuilder: (context, index) {
                   return Container(

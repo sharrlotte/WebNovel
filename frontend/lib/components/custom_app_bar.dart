@@ -11,8 +11,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 2,
       title: const Text(
         "SAKURA NOVEL",
-        style: TextStyle(color: Color.fromARGB(255, 236, 192, 216)),
+        style: TextStyle(
+            color: Color.fromARGB(255, 236, 192, 216),
+            fontWeight: FontWeight.bold),
       ),
+      backgroundColor: Colors.white,
       actions: [
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -24,7 +27,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
           child: PopupMenuButton<String>(
             icon: const Icon(Icons.menu, color: Colors.white),
             onSelected: onMenuSelected,
