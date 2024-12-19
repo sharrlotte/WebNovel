@@ -67,22 +67,28 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const MainSlider(),
-          RankingNovel(),
-          NovelFilters(
-            selectedSortTag: _selectedSortTag,
-            selectedGenre: _selectedGenre,
-            onSortTagChanged: (tag) {
-              setState(() {
-                _selectedSortTag = tag;
-              });
-            },
-            onGenreChanged: (genre) {
-              setState(() {
-                _selectedGenre = genre;
-              });
-            },
-          ),
+          Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  const MainSlider(),
+                  RankingNovel(),
+                  NovelFilters(
+                    selectedSortTag: _selectedSortTag,
+                    selectedGenre: _selectedGenre,
+                    onSortTagChanged: (tag) {
+                      setState(() {
+                        _selectedSortTag = tag;
+                      });
+                    },
+                    onGenreChanged: (genre) {
+                      setState(() {
+                        _selectedGenre = genre;
+                      });
+                    },
+                  ),
+                ],
+              )),
           SizedBox(
             height: 250,
             child: ListView.builder(
