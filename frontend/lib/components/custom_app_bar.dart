@@ -8,17 +8,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      elevation: 8,
-      shadowColor: Colors.black.withOpacity(0.75),
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.black, Colors.white],
-          ),
-        ),
-      ),
+      elevation: 2,
       title: const Text(
         "SAKURA NOVEL",
         style: TextStyle(color: Color.fromARGB(255, 236, 192, 216)),
@@ -26,10 +16,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.3),
-            shape: BoxShape.circle,
-          ),
           child: IconButton(
             icon: const Icon(Icons.search, color: Colors.white),
             onPressed: () {
@@ -39,10 +25,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.3),
-            shape: BoxShape.circle,
-          ),
           child: PopupMenuButton<String>(
             icon: const Icon(Icons.menu, color: Colors.white),
             onSelected: onMenuSelected,

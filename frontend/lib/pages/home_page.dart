@@ -63,59 +63,54 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  const MainSlider(),
-                  RankingNovel(),
-                  NovelFilters(
-                    selectedSortTag: _selectedSortTag,
-                    selectedGenre: _selectedGenre,
-                    onSortTagChanged: (tag) {
-                      setState(() {
-                        _selectedSortTag = tag;
-                      });
-                    },
-                    onGenreChanged: (genre) {
-                      setState(() {
-                        _selectedGenre = genre;
-                      });
-                    },
-                  ),
-                ],
-              )),
-          SizedBox(
-            height: 250,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _novels.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  width: 140, // Chiều rộng của mỗi card
-                  margin: const EdgeInsets.only(right: 12),
-                  child: NovelCard(
-                    key: Key('novel_$index'),
-                    imagePath: _novels[index]['imagePath'] ?? '',
-                    title: _novels[index]['title'] ?? '',
-                    chapter: _novels[index]['chapter'] ?? '',
-                    isFollowed: _novels[index]['isFollowed'] == 'true',
-                    onFollowChanged: (isFollowed) {
-                      logger.i(
-                          'Novel ${_novels[index]['title']} is ${isFollowed ? 'followed' : 'unfollowed'}');
-                    },
-                  ),
-                );
+    return Padding(
+        padding: const EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const MainSlider(),
+            const SizedBox(height: 20),
+            RankingNovel(),
+            NovelFilters(
+              selectedSortTag: _selectedSortTag,
+              selectedGenre: _selectedGenre,
+              onSortTagChanged: (tag) {
+                setState(() {
+                  _selectedSortTag = tag;
+                });
+              },
+              onGenreChanged: (genre) {
+                setState(() {
+                  _selectedGenre = genre;
+                });
               },
             ),
-          ),
-        ],
-      ),
-    );
+            SizedBox(
+              height: 250,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _novels.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    width: 140, // Chiều rộng của mỗi card
+                    margin: const EdgeInsets.only(right: 12),
+                    child: NovelCard(
+                      key: Key('novel_$index'),
+                      imagePath: _novels[index]['imagePath'] ?? '',
+                      title: _novels[index]['title'] ?? '',
+                      chapter: _novels[index]['chapter'] ?? '',
+                      isFollowed: _novels[index]['isFollowed'] == 'true',
+                      onFollowChanged: (isFollowed) {
+                        logger.i(
+                            'Novel ${_novels[index]['title']} is ${isFollowed ? 'followed' : 'unfollowed'}');
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ]),
+        ));
   }
 }
