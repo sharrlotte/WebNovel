@@ -4,7 +4,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String) onMenuSelected;
 
   const CustomAppBar({super.key, required this.onMenuSelected});
-  
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +48,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             onSelected: onMenuSelected,
             itemBuilder: (BuildContext context) {
               return [
+                const PopupMenuItem(value: "/", child: Text("Trang chủ")),
                 const PopupMenuItem(value: "login", child: Text("Đăng nhập")),
-                const PopupMenuItem(value: "register", child: Text("Đăng ký")),
-                const PopupMenuItem(value: "downloads", child: Text("Truyện đã tải xuống")),
-                const PopupMenuItem(value: "upload", child: Text("Đăng truyện")),
+                const PopupMenuItem(
+                    value: "downloads", child: Text("Truyện đã tải xuống")),
+                const PopupMenuItem(
+                    value: "upload", child: Text("Đăng truyện")),
                 const PopupMenuItem(value: "news", child: Text("Tin tức")),
                 const PopupMenuItem(value: "fanpage", child: Text("Fanpage")),
-                const PopupMenuItem(value: "hidden_group", child: Text("Hội kín")),
+                const PopupMenuItem(
+                    value: "hidden_group", child: Text("Hội kín")),
               ];
             },
           ),
