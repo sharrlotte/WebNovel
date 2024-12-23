@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/bloc/session_cubit.dart';
+import 'package:frontend/components/custom_app_bar.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
-import 'pages/register_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
@@ -27,10 +27,34 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: '/',
           routes: {
-            '/': (context) => HomePage(),
-            '/login': (context) => const LoginPage(),
-            '/register': (context) => const RegisterPage(),
+            '/': (context) => const NavScaffold(body: HomePage()),
+            '/login': (context) => const NavScaffold(body: LoginPage()),
           },
         ));
+  }
+}
+
+class NavScaffold extends StatelessWidget {
+  final Widget body;
+
+  const NavScaffold({super.key, required this.body});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: CustomAppBar(
+          onMenuSelected: (value) {
+            switch (value) {
+              case "/":
+                Navigator.pushNamed(context, '/');
+                break;
+
+              case "login":
+                Navigator.pushNamed(context, '/login');
+                break;
+            }
+          },
+        ),
+        body: body);
   }
 }

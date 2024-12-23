@@ -50,6 +50,7 @@ model User {
     accounts    Account[]
     isDeleted   Boolean
     isBanned    Boolean
+    Rating      Rating[]
 }
 
 model Category {
@@ -92,6 +93,7 @@ model Chapter {
     name      String
     createdAt DateTime  @default(now())
     novelId   Int
+    content   String
     novel     Novel     @relation(fields: [novelId], references: [id], onDelete: Cascade)
     Comment   Comment[]
 }
@@ -99,10 +101,12 @@ model Chapter {
 model Rating {
     id        Int      @id @default(autoincrement())
     novelId   Int
+    userId    Int
     content   String
     score     Int      @default(1)
     createdAt DateTime @default(now())
     novel     Novel    @relation(fields: [novelId], references: [id], onDelete: Cascade)
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model View {
