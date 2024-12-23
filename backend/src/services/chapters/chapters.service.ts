@@ -15,10 +15,8 @@ export class ChaptersService {
   async create(createChapterDto: CreateChapterDto) {
     const existingChapter = await this.databaseService.chapter.findFirst({
       where: {
-        AND: [
-          { name: createChapterDto.name },
-          { novelId: createChapterDto.novelId },
-        ],
+        novelId: createChapterDto.novelId,
+        name: createChapterDto.name,
       },
     });
 
