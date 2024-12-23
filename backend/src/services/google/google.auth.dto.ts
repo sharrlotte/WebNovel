@@ -1,11 +1,11 @@
 import { Expose, Type } from 'class-transformer';
-import { UserResponse } from 'src/services/users/dto/user.response';
+import { SessionResponseDto } from 'src/services/auth/dto/session.dto';
 
 export class GoogleAuthResponse {
   @Expose()
   accessToken: string;
 
   @Expose()
-  @Type(() => UserResponse)
-  user: UserResponse;
+  @Type(() => SessionResponseDto)
+  user: SessionResponseDto;
 }

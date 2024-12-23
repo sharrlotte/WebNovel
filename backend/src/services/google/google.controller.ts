@@ -13,6 +13,7 @@ import { UsersService } from 'src/services/users/users.service';
 import { JwtAuthService } from 'src/services/jwt/jwt.service';
 import { plainToInstance } from 'class-transformer';
 import { GoogleAuthResponse } from 'src/services/google/google.auth.dto';
+import { getSessionOrNull } from 'src/services/auth/auth.utils';
 
 @Controller('auth/google')
 @Injectable()
@@ -61,7 +62,7 @@ export class GoogleOauthController {
 
     return plainToInstance(GoogleAuthResponse, {
       ...this.jwtService.login(user),
-      user: { ...user, avatar: picture },
+      user: getSessionOrNull(req),
     });
   }
 }
