@@ -82,19 +82,10 @@ export class ChaptersService {
         throw new NotFoundException(`Chapter với ID ${id} không tồn tại`);
       }
 
-      if (updateChapterDto.id && updateChapterDto.id !== currentChapter.id) {
-        throw new BadRequestException('Bạn không được phép sửa ID chapter');
-      }
-
       if ('createdAt' in updateChapterDto) {
-        const currentDate = new Date(currentChapter.createdAt).getTime();
-        const updateDate = new Date(updateChapterDto.createdAt).getTime();
-
-        if (currentDate !== updateDate) {
-          throw new BadRequestException(
-            'Bạn không được phép sửa ngày tạo chapter',
-          );
-        }
+        throw new BadRequestException(
+          'Bạn không được phép sửa ngày tạo chapter',
+        );
       }
 
       return await this.databaseService.chapter.update({
