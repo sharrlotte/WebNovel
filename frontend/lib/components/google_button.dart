@@ -10,6 +10,10 @@ class GoogleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
+      if (session is SessionLoading) {
+        return const CircularProgressIndicator();
+      }
+
       if (session is! Authenticated) {
         return ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -21,6 +25,7 @@ class GoogleButton extends StatelessWidget {
           onPressed: () async {
             final cubit = context.read<SessionCubit>();
             await cubit.signInWithGoogle();
+            
           },
           child: const Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -33,7 +38,7 @@ class GoogleButton extends StatelessWidget {
                   width: 40,
                 ),
                 Text(
-                  'Login With Google',
+                  'Đăng nhập bằng Google',
                 ),
               ],
             ),
@@ -41,26 +46,18 @@ class GoogleButton extends StatelessWidget {
         );
       }
 
-      var avatar = session.session.user!.avatar;
-
       return ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
-          onPressed: () {
-            context.read<SessionCubit>().signOut();
-          },
-          child: Flex(direction: Axis.vertical, children: [
-            Text("Đã đăng nhập ${session.session.user!.name} , Đăng xuất?"),
-            avatar != null
-                ? CircleAvatar(
-                    backgroundImage: NetworkImage(avatar),
-                  )
-                : Text("")
-          ]));
+        ),
+        onPressed: () {
+          context.read<SessionCubit>().signOut();
+        },
+        child: const Text("Đăng xuất?"),
+      );
     });
   }
 }

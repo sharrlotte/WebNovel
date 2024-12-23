@@ -93,6 +93,7 @@ model Chapter {
     name      String
     createdAt DateTime  @default(now())
     novelId   Int
+    content   String
     novel     Novel     @relation(fields: [novelId], references: [id], onDelete: Cascade)
     Comment   Comment[]
 }

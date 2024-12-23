@@ -38,21 +38,17 @@ class RankingNovel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.blue.withOpacity(0.1),
-      padding: const EdgeInsets.symmetric(vertical: 16),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'Truyện Nổi Bật',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
+          const Text(
+            'Truyện Nổi Bật',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
             ),
           ),
           const SizedBox(height: 16),
@@ -60,7 +56,6 @@ class RankingNovel extends StatelessWidget {
             height: 250,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: _featuredNovels.length,
               itemBuilder: (context, index) {
                 return Container(
