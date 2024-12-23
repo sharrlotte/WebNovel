@@ -62,7 +62,7 @@ export class GoogleOauthController {
 
     return plainToInstance(GoogleAuthResponse, {
       ...this.jwtService.login(user),
-      user: getSessionOrNull(req),
+      user: {...user},
     });
   }
 }
