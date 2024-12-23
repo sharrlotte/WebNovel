@@ -25,6 +25,7 @@ class GoogleButton extends StatelessWidget {
           onPressed: () async {
             final cubit = context.read<SessionCubit>();
             await cubit.signInWithGoogle();
+            
           },
           child: const Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),

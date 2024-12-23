@@ -1,6 +1,6 @@
 class Session {
   final String? accessToken;
-  final User? user;
+  final User user;
 
   Session({required this.accessToken, required this.user});
 
