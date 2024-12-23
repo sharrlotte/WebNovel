@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Novel App',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primarySwatch: Colors.cyan,
             scaffoldBackgroundColor: Colors.grey[100],
           ),
           initialRoute: '/',
