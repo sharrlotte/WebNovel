@@ -20,7 +20,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
           child: IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons.search, color: Colors.black),
             onPressed: () {
               // Xử lý tìm kiếm
             },
@@ -28,7 +28,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         Container(
           child: PopupMenuButton<String>(
-            icon: const Icon(Icons.menu, color: Colors.white),
+            icon: const Icon(Icons.menu, color: Colors.black),
             onSelected: onMenuSelected,
             itemBuilder: (BuildContext context) {
               return [

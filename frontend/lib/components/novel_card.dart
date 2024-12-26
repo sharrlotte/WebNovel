@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/novel_model.dart';
 import 'novel_detail_page.dart';
 
 class NovelCard extends StatefulWidget {
-  final String title;
-  final String cover;
-  final String chapter;
+  final Novel novel;
   final bool isFollowed;
   final Function(bool)? onFollowChanged;
 
   const NovelCard({
     required super.key,
-    required this.title,
-    required this.cover,
-    required this.chapter,
+    required this.novel,
     this.isFollowed = false,
     this.onFollowChanged,
   });
@@ -37,13 +34,7 @@ class _NovelCardState extends State<NovelCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NovelDetailPage(
-              novel: {
-                'title': widget.title,
-                'chapter': widget.chapter,
-                'isFollowed': _isFollowed,
-              },
-            ),
+            builder: (context) => NovelDetailPage(novel: widget.novel),
           ),
         );
       },
@@ -70,7 +61,7 @@ class _NovelCardState extends State<NovelCard> {
                   child: ClipRRect(
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(8)),
-                    child: Image(image: NetworkImage(widget.cover)),
+                    child: Image(image: NetworkImage(widget.novel.cover)),
                   ),
                 ),
                 // Phần thông tin
@@ -81,7 +72,7 @@ class _NovelCardState extends State<NovelCard> {
                     children: [
                       // Tiêu đề truyện
                       Text(
-                        widget.title,
+                        widget.novel.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -92,7 +83,7 @@ class _NovelCardState extends State<NovelCard> {
                       const SizedBox(height: 4),
                       // Số chương
                       Text(
-                        widget.chapter,
+                        widget.novel.author,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],

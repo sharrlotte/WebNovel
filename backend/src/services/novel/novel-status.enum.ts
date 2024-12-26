@@ -1,5 +1,5 @@
 export enum NovelStatus {
-  ONGOING = 'Đang tiến hành',
+  ON_GOING = 'Đang tiến hành',
   COMPLETED = 'Hoàn thành',
   PAUSED = 'Tạm ngưng',
 } 

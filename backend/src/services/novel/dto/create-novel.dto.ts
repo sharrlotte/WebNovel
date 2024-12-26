@@ -37,7 +37,7 @@ export class CreateNovelDto {
   author: string;
 
   @ApiProperty({
-    example: NovelStatus.ONGOING,
+    example: NovelStatus.ON_GOING,
     description: 'Trạng thái truyện',
     enum: NovelStatus,
     enumName: 'NovelStatus',

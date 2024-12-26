@@ -7,6 +7,7 @@ import {
 import { CreateNovelDto } from './dto/create-novel.dto';
 import { UpdateNovelDto } from './dto/update-novel.dto';
 import { DatabaseService } from 'src/services/database/database.service';
+import { GetAllNovelQuery } from 'src/services/novel/dto/get-all-novel-query.dto';
 
 @Injectable()
 export class NovelService {
@@ -25,11 +26,57 @@ export class NovelService {
     });
   }
 
-  findAll() {
+  sortMapping = {
+    latest_update: {
+      updatedAt: 'desc',
+    },
+    most_liked: {
+      rating: 'desc',
+    },
+    most_viewed: {
+      view: 'desc',
+    },
+    chapter_count: {
+      chapter: 'desc',
+    },
+  };
+
+  findAll(query: GetAllNovelQuery) {
+    const { status, sort, gene } = query;
+
+    let q = {};
+    let s = undefined;
+
+    if (status && status !== 'all') {
+      q = {
+        status: status,
+      };
+    }
+
+    if (sort) {
+      s = this.sortMapping[sort];
+    }
+
+    if (gene && gene !== 'all') {
+      q = {
+        ...q,
+        categories: {
+          some: {
+            category: {
+              name: gene,
+            },
+          },
+        },
+      };
+    }
+
     return this.databaseService.novel.findMany({
+      where: q,
+      orderBy: s,
       include: {
         user: true,
         chapters: true,
+        categories: true,
       },
     });
   }

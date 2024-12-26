@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/novel_model.dart';
+
+import '../models/query.dart';
 
 class NovelDetailPage extends StatefulWidget {
-  final Map<String, dynamic> novel;
+  final Novel novel;
 
   const NovelDetailPage({super.key, required this.novel});
 
@@ -15,7 +18,8 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
   @override
   void initState() {
     super.initState();
-    isFollowed = widget.novel['isFollowed'] ?? false;
+
+    isFollowed = true;
   }
 
   @override
@@ -34,19 +38,18 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage(widget.novel['imagePath']),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.3),
-                        BlendMode.darken,
-                      ),
-                    ),
+                        image: NetworkImage(widget.novel.cover),
+                        fit: BoxFit.contain),
                   ),
                 ),
                 // Nút back
+                Divider(
+                  height: 1,
+                  color: Colors.black,
+                ),
                 SafeArea(
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -59,14 +62,14 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.novel['title'],
+                    widget.novel.name,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('Tác giả: ${widget.novel['author'] ?? 'Không xác định'}'),
+                  Text('Tác giả: ${widget.novel.author}'),
                   const SizedBox(height: 16),
                   // Thể loại
                   Wrap(
@@ -81,6 +84,19 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                   const SizedBox(height: 16),
                   // Mô tả
                   const Text(
+                    'Trạng thái:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(status.firstWhere((item) =>
+                          item['id'] == widget.novel.status)['name'] ??
+                      "Lỗi"),
+                  const SizedBox(height: 16),
+                  // Mô tả
+                  const Text(
                     'Mô tả:',
                     style: TextStyle(
                       fontSize: 18,
@@ -88,7 +104,7 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(widget.novel['description'] ?? 'Chưa có mô tả'),
+                  Text(widget.novel.description),
                   const SizedBox(height: 24),
                   // Danh sách chapter
                   const Text(
@@ -126,7 +142,8 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
         },
         label: Text(isFollowed ? 'Đã theo dõi' : 'Theo dõi'),
         icon: Icon(isFollowed ? Icons.bookmark : Icons.bookmark_add),
-        backgroundColor: isFollowed ? Colors.grey : Theme.of(context).primaryColor,
+        backgroundColor:
+            isFollowed ? Colors.grey : Theme.of(context).primaryColor,
       ),
     );
   }

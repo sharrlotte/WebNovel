@@ -54,9 +54,10 @@ model User {
 }
 
 model Category {
-    id          Int     @id @default(autoincrement())
-    name        String
-    description String?
+    id            Int             @id @default(autoincrement())
+    name          String
+    description   String?
+    NovelCategory NovelCategory[]
 }
 
 model Genes {
@@ -65,19 +66,27 @@ model Genes {
     description String?
 }
 
+model NovelCategory {
+    id         Int      @id @default(autoincrement())
+    novelId    Int
+    categoryId Int
+    novel      Novel    @relation(fields: [novelId], references: [id])
+    category   Category @relation(fields: [categoryId], references: [id])
+}
+
 model Novel {
-    id            Int       @id @default(autoincrement())
+    id            Int             @id @default(autoincrement())
     name          String
     description   String?
-    createdAt     DateTime  @default(now())
+    createdAt     DateTime        @default(now())
     cover         String?
     author        String
     status        String
-    view          Int       @default(0)
-    updatedAt     DateTime  @updatedAt
-    rating        Float?    @default(0.0)
-    followerCount Int       @default(0)
-    commentCount  Int       @default(0)
+    view          Int             @default(0)
+    updatedAt     DateTime        @updatedAt
+    rating        Float?          @default(0.0)
+    followerCount Int             @default(0)
+    commentCount  Int             @default(0)
     userId        Int
     chapters      Chapter[]
     ratings       Rating[]
@@ -85,7 +94,8 @@ model Novel {
     comments      Comment[]
     follows       Follow[]
     histories     History[]
-    user          User      @relation(fields: [userId], references: [id])
+    user          User            @relation(fields: [userId], references: [id])
+    categories    NovelCategory[]
 }
 
 model Chapter {

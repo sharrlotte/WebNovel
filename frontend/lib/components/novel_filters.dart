@@ -1,42 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/query.dart';
 
 class NovelFilters extends StatelessWidget {
   final String selectedSortTag;
   final String selectedGenre;
+  final String selectedStatus;
   final Function(String) onSortTagChanged;
   final Function(String) onGenreChanged;
+  final Function(String) onStatusSelected;
 
-  const NovelFilters({
-    super.key,
-    required this.selectedSortTag,
-    required this.selectedGenre,
-    required this.onSortTagChanged,
-    required this.onGenreChanged,
-  });
-
-  // Định nghĩa các thể loại
-  static const List<Map<String, String>> _genres = [
-    {'id': 'all', 'name': 'Tất cả'},
-    {'id': 'comedy', 'name': 'Hài hước'},
-    {'id': 'romance', 'name': 'Tình cảm'},
-    {'id': 'action', 'name': 'Hành động'},
-    // Thêm các thể loại khác
-  ];
-
-  // Cập nhật lại danh sách sắp xếp
-  static const List<Map<String, String>> _sortOptions = [
-    {'id': 'latest_update', 'name': 'Ngày cập nhật'},
-    {'id': 'most_liked', 'name': 'Lượt thích'},
-    {'id': 'most_viewed', 'name': 'Lượt xem'},
-    {'id': 'chapter_count', 'name': 'Số chương'},
-  ];
-
-  // Định nghĩa các trạng thái
-  static const List<Map<String, String>> _statusOptions = [
-    {'id': 'all', 'name': 'Tất cả'},
-    {'id': 'completed', 'name': 'Hoàn thành'},
-    {'id': 'ongoing', 'name': 'Đang tiến hành'},
-  ];
+  const NovelFilters(
+      {super.key,
+      required this.selectedSortTag,
+      required this.selectedGenre,
+      required this.onSortTagChanged,
+      required this.onGenreChanged,
+      required this.selectedStatus,
+      required this.onStatusSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +33,13 @@ class NovelFilters extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                value: _genres.any((g) => g['id'] == selectedGenre)
+                value: genres.any((g) => g['id'] == selectedGenre)
                     ? selectedGenre
-                    : _genres.first['id'],
+                    : genres.first['id'],
                 isExpanded: true,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 hint: const Text('Thể loại'),
-                items: _genres
+                items: genres
                     .map((genre) => DropdownMenuItem<String>(
                           value: genre['id'],
                           child: Text(genre['name']!),
@@ -84,13 +64,13 @@ class NovelFilters extends StatelessWidget {
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                value: _sortOptions.any((s) => s['id'] == selectedSortTag)
+                value: sorts.any((s) => s['id'] == selectedSortTag)
                     ? selectedSortTag
-                    : _sortOptions.first['id'],
+                    : sorts.first['id'],
                 isExpanded: true,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 hint: const Text('Sắp xếp theo'),
-                items: _sortOptions
+                items: sorts
                     .map((sort) => DropdownMenuItem<String>(
                           value: sort['id'],
                           child: Text(sort['name']!),
@@ -106,26 +86,25 @@ class NovelFilters extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-
-          // Các nút trạng thái
           Wrap(
             spacing: 8,
-            children: _statusOptions
+            children: status
                 .map((status) => FilterChip(
                       label: Text(
                         status['name']!,
                         style: TextStyle(
-                          color: selectedGenre == status['id']
+                          color: selectedStatus == status['id']
                               ? Colors.white
                               : Colors.black,
                         ),
                       ),
-                      selected: selectedGenre == status['id'],
+                      selected: selectedStatus == status['id'],
                       selectedColor: Theme.of(context).primaryColor,
                       backgroundColor: Colors.grey.shade200,
+                      checkmarkColor: Colors.white,
                       onSelected: (selected) {
                         if (selected) {
-                          onGenreChanged(status['id']!);
+                          onStatusSelected(status['id']!);
                         }
                       },
                     ))

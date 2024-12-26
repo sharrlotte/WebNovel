@@ -13,60 +13,111 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String _selectedSortTag = 'newest';
-  String _selectedGenre = 'all';
-
-  Future<List<Novel>> getNovels() async {
-    final res = await Dio().get('${dotenv.env['API_URL']}/novels');
+Future<List<Novel>> getNovels(
+    {required String sort,
+    required String gene,
+    required String status}) async {
+  try {
+    final res = await Dio().get('${dotenv.env['API_URL']}/novels',
+        queryParameters: {'sort': sort, 'gene': gene, 'status': status});
 
     final data = (res.data as List)
         .map((e) => Novel.fromJson(e as Map<String, dynamic>))
         .toList();
 
     return data;
+  } catch (exception) {
+    return Future.error(StateError("Lỗi không tải được dữ liệu"));
   }
+}
+
+class _HomePageState extends State<HomePage> {
+  String _selectedSortTag = 'newest';
+  String _selectedGenre = 'all';
+  String _selectedStatus = "all";
 
   @override
   Widget build(BuildContext context) {
-    return QueryBuilder<List<Novel>, Error>(const ['novels'], getNovels,
-        builder: (content, novels) {
-      if (novels.isLoading) {
-        return const LinearProgressIndicator();
-      }
+    return Padding(
+        padding: const EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const MainSlider(),
+            const SizedBox(height: 20),
+            NovelFilters(
+              selectedSortTag: _selectedSortTag,
+              selectedGenre: _selectedGenre,
+              selectedStatus: _selectedStatus,
+              onSortTagChanged: (tag) {
+                setState(() {
+                  _selectedSortTag = tag;
+                });
+              },
+              onGenreChanged: (genre) {
+                setState(() {
+                  _selectedGenre = genre;
+                });
+              },
+              onStatusSelected: (status) {
+                setState(() {
+                  _selectedStatus = status;
+                });
+              },
+            ),
+            NovelPage(
+              sort: _selectedSortTag,
+              gene: _selectedGenre,
+              status: _selectedStatus,
+            )
+          ]),
+        ));
+  }
+}
 
-      if (novels.isError) {
-        return Text(novels.error.toString());
-      }
+class NovelPage extends StatelessWidget {
+  final String sort;
+  final String gene;
+  final String status;
 
-      final data = novels.data;
+  const NovelPage(
+      {super.key,
+      required this.sort,
+      required this.gene,
+      required this.status});
 
-      if (data == null) {
-        return const Text("No result");
-      }
+  @override
+  Widget build(BuildContext context) {
+    return QueryClientBuilder(
+        builder: (context, queryClient) => QueryBuilder<List<Novel>, Error>(
+                ['novels', sort, gene, status],
+                () => getNovels(sort: sort, gene: gene, status: status),
+                refetchInterval: const Duration(seconds: 100),
+                builder: (context, novels) {
+              if (novels.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-      return Padding(
-          padding: const EdgeInsets.all(10),
-          child: SingleChildScrollView(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const MainSlider(),
-              const SizedBox(height: 20),
-              NovelFilters(
-                selectedSortTag: _selectedSortTag,
-                selectedGenre: _selectedGenre,
-                onSortTagChanged: (tag) {
-                  setState(() {
-                    _selectedSortTag = tag;
-                  });
-                },
-                onGenreChanged: (genre) {
-                  setState(() {
-                    _selectedGenre = genre;
-                  });
-                },
-              ),
-              SizedBox(
+              if (novels.isError) {
+                return Center(
+                    child: Column(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () =>
+                            queryClient.invalidateQueries(['novels']),
+                        child: const Text("Tải lại")),
+                    Text(novels.error?.toString() ?? 'Lõi')
+                  ],
+                ));
+              }
+
+              final data = novels.data;
+
+              if (data == null || data.isEmpty) {
+                return const Text("No result");
+              }
+
+              return SizedBox(
                 height: 250,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -77,18 +128,14 @@ class _HomePageState extends State<HomePage> {
                       margin: const EdgeInsets.only(right: 12),
                       child: NovelCard(
                         key: Key(data[index].id.toString()),
-                        title: data[index].name,
-                        cover: data[index].cover,
-                        chapter: data[index].name,
+                        novel: data[index],
                         isFollowed: data[index].name == 'true',
                         onFollowChanged: (isFollowed) {},
                       ),
                     );
                   },
                 ),
-              ),
-            ]),
-          ));
-    });
+              );
+            }));
   }
 }

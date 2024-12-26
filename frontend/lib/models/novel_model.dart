@@ -4,13 +4,17 @@ class Novel {
   final String cover;
   final String description;
   final String createdAt;
+  final String author;
+  final String status;
 
   Novel({
     required this.id,
     required this.name,
     required this.cover,
+    required this.author,
     required this.description,
     required this.createdAt,
+    required this.status,
   });
 
   static Novel fromJson(Map<String, dynamic> data) {
@@ -19,6 +23,8 @@ class Novel {
         name: data['name'],
         cover: data['cover'],
         description: data['description'],
-        createdAt: data['createdAt']);
+        author: data['author'],
+        createdAt: data['createdAt'],
+        status: data['status'] ?? 'COMPLETED');
   }
 }

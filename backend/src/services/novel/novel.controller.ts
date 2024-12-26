@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   Req,
+  Query,
 } from '@nestjs/common';
 import { NovelService } from './novel.service';
 import { CreateNovelDto } from './dto/create-novel.dto';
@@ -16,6 +17,7 @@ import NovelDto from './dto/novel.dto';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { getSession } from '../auth/auth.utils';
 import { Request } from 'express';
+import { GetAllNovelQuery } from 'src/services/novel/dto/get-all-novel-query.dto';
 
 @Controller('novels')
 export class NovelController {
@@ -36,9 +38,9 @@ export class NovelController {
   }
 
   @Get()
-  async findAll() {
+  async findAll(@Query() query: GetAllNovelQuery) {
     const data = await this.novelService
-      .findAll()
+      .findAll(query)
       .then((items) => items.map((item) => plainToInstance(NovelDto, item)));
 
     return data;
