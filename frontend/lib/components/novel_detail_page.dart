@@ -43,10 +43,6 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                   ),
                 ),
                 // Nút back
-                Divider(
-                  height: 1,
-                  color: Colors.black,
-                ),
                 SafeArea(
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -68,7 +64,6 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   Text('Tác giả: ${widget.novel.author}'),
                   const SizedBox(height: 16),
                   // Thể loại
@@ -90,12 +85,11 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   Text(status.firstWhere((item) =>
                           item['id'] == widget.novel.status)['name'] ??
                       "Lỗi"),
                   const SizedBox(height: 16),
-                  // Mô tả
+                  // Mô  /
                   const Text(
                     'Mô tả:',
                     style: TextStyle(
@@ -103,9 +97,8 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   Text(widget.novel.description),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   // Danh sách chapter
                   const Text(
                     'Danh sách Chapter:',
@@ -114,17 +107,15 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   ListView.builder(
+                    padding: const EdgeInsets.all(0),
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: 10, // Số lượng chapter
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('Chapter ${index + 1}'),
-                        onTap: () {
-                          // Xử lý khi bấm vào chapter
-                        },
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: Text('Chapter ${index + 1}'),
                       );
                     },
                   ),
@@ -143,7 +134,9 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
         label: Text(isFollowed ? 'Đã theo dõi' : 'Theo dõi'),
         icon: Icon(isFollowed ? Icons.bookmark : Icons.bookmark_add),
         backgroundColor:
-            isFollowed ? Colors.grey : Theme.of(context).primaryColor,
+            !isFollowed ? Colors.white : Theme.of(context).primaryColor,
+        foregroundColor:
+            isFollowed ? Colors.white : Theme.of(context).primaryColor,
       ),
     );
   }

@@ -99,13 +99,14 @@ class _NovelCardState extends State<NovelCard> {
               top: 8,
               right: 8,
               child: Container(
+                padding: const EdgeInsets.all(1),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.5),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
                   iconSize: 20,
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(0),
                   constraints: const BoxConstraints(),
                   icon: Icon(
                     _isFollowed ? Icons.favorite : Icons.favorite_border,
