@@ -1,13 +1,24 @@
 class Novel {
-  final String imagePath;
-  final String title;
-  final String chapter;
-  final String updatedAt;
+  final int id;
+  final String name;
+  final String cover;
+  final String description;
+  final String createdAt;
 
   Novel({
-    required this.imagePath,
-    required this.title,
-    required this.chapter,
-    required this.updatedAt,
+    required this.id,
+    required this.name,
+    required this.cover,
+    required this.description,
+    required this.createdAt,
   });
+
+  static Novel fromJson(Map<String, dynamic> data) {
+    return Novel(
+        id: data['id'],
+        name: data['name'],
+        cover: data['cover'],
+        description: data['description'],
+        createdAt: data['createdAt']);
+  }
 }

@@ -36,10 +36,12 @@ export class NovelController {
   }
 
   @Get()
-  findAll() {
-    return this.novelService
+  async findAll() {
+    const data = await this.novelService
       .findAll()
       .then((items) => items.map((item) => plainToInstance(NovelDto, item)));
+
+    return data;
   }
 
   @Get(':id')

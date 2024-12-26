@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'novel_detail_page.dart';
 
 class NovelCard extends StatefulWidget {
-  final String imagePath;
   final String title;
+  final String cover;
   final String chapter;
   final bool isFollowed;
   final Function(bool)? onFollowChanged;
 
   const NovelCard({
     required super.key,
-    required this.imagePath,
     required this.title,
+    required this.cover,
     required this.chapter,
     this.isFollowed = false,
     this.onFollowChanged,
@@ -39,7 +39,6 @@ class _NovelCardState extends State<NovelCard> {
           MaterialPageRoute(
             builder: (context) => NovelDetailPage(
               novel: {
-                'imagePath': widget.imagePath,
                 'title': widget.title,
                 'chapter': widget.chapter,
                 'isFollowed': _isFollowed,
@@ -69,12 +68,9 @@ class _NovelCardState extends State<NovelCard> {
                 // Ảnh truyện
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                    child: Image.asset(
-                      widget.imagePath,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(8)),
+                    child: Image(image: NetworkImage(widget.cover)),
                   ),
                 ),
                 // Phần thông tin
