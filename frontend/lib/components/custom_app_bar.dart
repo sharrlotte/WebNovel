@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/bloc/session_cubit.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final Function(String) onMenuSelected;
-
-  const CustomAppBar({super.key, required this.onMenuSelected});
-
+  const CustomAppBar({super.key});
   @override
   Widget build(BuildContext context) {
+    void onMenuSelected(value) async {
+      final cubit = context.read<SessionCubit>();
+
+      switch (value) {
+        case "/":
+          Navigator.pushNamed(context, '/');
+          break;
+
+        case "login":
+          Navigator.pushNamed(context, '/login');
+          break;
+
+        case "upload":
+          Navigator.pushNamed(context, '/upload');
+          break;
+
+        case "logout":
+          await cubit.signOut();
+          break;
+      }
+    }
+
     return AppBar(
       elevation: 2,
       title: const Text(
@@ -26,26 +47,36 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             },
           ),
         ),
-        Container(
-          child: PopupMenuButton<String>(
+        BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
+          return PopupMenuButton<String>(
             icon: const Icon(Icons.menu, color: Colors.black),
             onSelected: onMenuSelected,
             itemBuilder: (BuildContext context) {
+              final isLoggedIn = session is Authenticated;
               return [
                 const PopupMenuItem(value: "/", child: Text("Trang chủ")),
-                const PopupMenuItem(value: "login", child: Text("Đăng nhập")),
-                const PopupMenuItem(
-                    value: "downloads", child: Text("Truyện đã tải xuống")),
-                const PopupMenuItem(
-                    value: "upload", child: Text("Đăng truyện")),
+                ...(isLoggedIn
+                    ? [
+                        const PopupMenuItem(
+                            value: "logout", child: Text("Đăng Xuất")),
+                        const PopupMenuItem(
+                            value: "downloads",
+                            child: Text("Truyện đã tải xuống")),
+                        const PopupMenuItem(
+                            value: "upload", child: Text("Đăng truyện")),
+                      ]
+                    : [
+                        const PopupMenuItem(
+                            value: "login", child: Text("Đăng nhập")),
+                      ]),
                 const PopupMenuItem(value: "news", child: Text("Tin tức")),
                 const PopupMenuItem(value: "fanpage", child: Text("Fanpage")),
                 const PopupMenuItem(
                     value: "hidden_group", child: Text("Hội kín")),
               ];
             },
-          ),
-        ),
+          );
+        }),
       ],
     );
   }

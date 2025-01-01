@@ -1,11 +1,3 @@
-const List<Map<String, String>> genres = [
-  {'id': 'all', 'name': 'Tất cả'},
-  {'id': 'comedy', 'name': 'Hài hước'},
-  {'id': 'romance', 'name': 'Tình cảm'},
-  {'id': 'action', 'name': 'Hành động'},
-  // Thêm các thể loại khác
-];
-
 // Cập nhật lại danh sách sắp xếp
 const List<Map<String, String>> sorts = [
   {'id': 'latest_update', 'name': 'Ngày cập nhật'},

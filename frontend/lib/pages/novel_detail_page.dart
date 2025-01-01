@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/novel_model.dart';
+import 'package:frontend/components/chapter_list.dart';
+import 'package:frontend/components/custom_app_bar.dart';
+import 'package:frontend/models/novel.dart';
 
 import '../models/query.dart';
 
@@ -25,6 +27,7 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const CustomAppBar(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,12 +46,6 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                   ),
                 ),
                 // Nút back
-                SafeArea(
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ),
               ],
             ),
             // Thông tin novel
@@ -69,12 +66,9 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                   // Thể loại
                   Wrap(
                     spacing: 8,
-                    children: [
-                      'manga',
-                      'slice of life',
-                      'học đường',
-                      'romance',
-                    ].map((tag) => Chip(label: Text(tag))).toList(),
+                    children: widget.novel.categories
+                        .map((tag) => Chip(label: Text(tag.name)))
+                        .toList(),
                   ),
                   const SizedBox(height: 16),
                   // Mô tả
@@ -107,18 +101,7 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  ListView.builder(
-                    padding: const EdgeInsets.all(0),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 10, // Số lượng chapter
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 10),
-                        child: Text('Chapter ${index + 1}'),
-                      );
-                    },
-                  ),
+                  NovelChapterList(novel: widget.novel),
                 ],
               ),
             ),

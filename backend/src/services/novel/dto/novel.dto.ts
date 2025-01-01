@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import CategoryDto from 'src/services/category/dto/category.dto';
 
 export default class NovelDto {
   @Expose()
@@ -39,4 +40,11 @@ export default class NovelDto {
 
   @Expose()
   userId: number;
+
+  @Expose()
+  isFollowing: boolean;
+
+  @Expose()
+  @Type(() => CategoryDto)
+  categories: CategoryDto[];
 }

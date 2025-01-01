@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/models/session.dart';
+import 'package:frontend/utils.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class SessionState {}
@@ -22,7 +23,7 @@ class SessionCubit extends Cubit<SessionState> {
   SessionCubit() : super(SessionInitial());
   GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
 
-  Future<void> signInWithGoogle() async {
+  Future<SessionState> signInWithGoogle() async {
     emit(SessionLoading());
 
     try {
@@ -37,7 +38,14 @@ class SessionCubit extends Cubit<SessionState> {
             data: {'idToken': idToken},
           );
 
-          emit(Authenticated(Session.fromJson(response.data)));
+          // ignore: prefer_interpolation_to_compose_strings
+          getApi().options.headers['Authorization'] =
+              "Bearer ${response.data['accessToken']}";
+
+          final state = Authenticated(Session.fromJson(response.data));
+          emit(state);
+
+          return state;
         } else {
           emit(Unauthenticated());
         }
@@ -48,10 +56,11 @@ class SessionCubit extends Cubit<SessionState> {
       print('Error during Google Sign-In: $error');
       emit(Unauthenticated());
     }
+    return Unauthenticated();
   }
 
   Future<void> signOut() async {
     emit(Unauthenticated());
-      await googleSignIn.signOut();
+    await googleSignIn.signOut();
   }
 }

@@ -12,7 +12,13 @@ export class AuthMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const token = req?.cookies?.jwt;
+    let token: string | undefined = req?.cookies?.jwt;
+
+    if (!token) {
+      token = req?.headers?.['Authorization'] as string | undefined;
+
+      token = token && token.replaceAll('Bearer ', '');
+    }
 
     if (!token) {
       request['user'] = null;

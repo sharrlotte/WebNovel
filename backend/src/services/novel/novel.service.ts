@@ -8,6 +8,7 @@ import { CreateNovelDto } from './dto/create-novel.dto';
 import { UpdateNovelDto } from './dto/update-novel.dto';
 import { DatabaseService } from 'src/services/database/database.service';
 import { GetAllNovelQuery } from 'src/services/novel/dto/get-all-novel-query.dto';
+import { SessionDto } from 'src/services/auth/dto/session.dto';
 
 @Injectable()
 export class NovelService {
@@ -41,7 +42,42 @@ export class NovelService {
     },
   };
 
-  findAll(query: GetAllNovelQuery) {
+  async findManyChapters(novelId: number, page: number) {
+    return this.databaseService.chapter
+      .findMany({
+        where: {
+          novelId,
+        },
+        include: {
+          _count: {
+            select: {
+              Comment: true,
+            },
+          },
+        },
+        skip: page * 30,
+        take: 30,
+      })
+      .then((res) =>
+        res.map((chapter) => ({ comment: chapter._count.Comment, ...chapter })),
+      );
+  }
+
+  async findNextChapter(id: number, chapterId: number) {
+    return this.databaseService.chapter.findFirst({
+      where: {
+        novelId: id,
+        id: {
+          gt: chapterId,
+        },
+      },
+      orderBy: {
+        id: 'asc',
+      },
+    });
+  }
+
+  async findAll(query: GetAllNovelQuery, session: SessionDto) {
     const { status, sort, gene } = query;
 
     let q = {};
@@ -57,28 +93,40 @@ export class NovelService {
       s = this.sortMapping[sort];
     }
 
-    if (gene && gene !== 'all') {
+    if (gene) {
       q = {
         ...q,
         categories: {
           some: {
             category: {
-              name: gene,
+              id: parseInt(gene),
             },
           },
         },
       };
     }
 
-    return this.databaseService.novel.findMany({
+    const result = await this.databaseService.novel.findMany({
       where: q,
       orderBy: s,
       include: {
         user: true,
-        chapters: true,
         categories: true,
+        follows:
+          session === null
+            ? false
+            : {
+                where: {
+                  userId: session.id,
+                },
+              },
       },
     });
+
+    return result.map((item) => ({
+      ...item,
+      isFollowing: item.follows?.length === 1,
+    }));
   }
 
   findOne(id: number) {
@@ -91,6 +139,34 @@ export class NovelService {
         ratings: true,
       },
     });
+  }
+
+  async follow(id: number, userId: number) {
+    const follow = await this.databaseService.follow.findFirst({
+      where: {
+        novelId: id,
+        userId,
+      },
+    });
+
+    if (follow) {
+      await this.databaseService.follow.delete({
+        where: {
+          id: follow.id,
+        },
+      });
+      return { result: false };
+    } else {
+      await this.databaseService.follow.create({
+        data: {
+          novelId: id,
+          userId,
+          createdAt: new Date(),
+        },
+      });
+
+      return { result: true };
+    }
   }
 
   async update(id: number, updateNovelDto: UpdateNovelDto, userId: number) {

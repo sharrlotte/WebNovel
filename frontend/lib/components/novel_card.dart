@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/novel_model.dart';
-import 'novel_detail_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/bloc/session_cubit.dart';
+import 'package:frontend/models/novel.dart';
+import '../pages/novel_detail_page.dart';
 
 class NovelCard extends StatefulWidget {
   final Novel novel;
-  final bool isFollowed;
   final Function(bool)? onFollowChanged;
 
   const NovelCard({
     required super.key,
     required this.novel,
-    this.isFollowed = false,
     this.onFollowChanged,
   });
 
@@ -19,12 +19,17 @@ class NovelCard extends StatefulWidget {
 }
 
 class _NovelCardState extends State<NovelCard> {
-  late bool _isFollowed;
-
   @override
   void initState() {
     super.initState();
-    _isFollowed = widget.isFollowed;
+  }
+
+  follow(int novelId) async {
+    final result = await Novel.follow(id: novelId);
+
+    setState(() {
+      widget.novel.isFollowing = result;
+    });
   }
 
   @override
@@ -61,7 +66,11 @@ class _NovelCardState extends State<NovelCard> {
                   child: ClipRRect(
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(8)),
-                    child: Image(image: NetworkImage(widget.novel.cover)),
+                    child: Image(
+                      image: NetworkImage(widget.novel.cover),
+                      errorBuilder: (context, error, stackTrace) =>
+                          Text(error.toString()),
+                    ),
                   ),
                 ),
                 // Phần thông tin
@@ -99,27 +108,42 @@ class _NovelCardState extends State<NovelCard> {
               top: 8,
               right: 8,
               child: Container(
-                padding: const EdgeInsets.all(1),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  iconSize: 20,
-                  padding: const EdgeInsets.all(0),
-                  constraints: const BoxConstraints(),
-                  icon: Icon(
-                    _isFollowed ? Icons.favorite : Icons.favorite_border,
-                    color: _isFollowed ? Colors.red : Colors.white,
+                  padding: const EdgeInsets.all(1),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _isFollowed = !_isFollowed;
-                    });
-                    widget.onFollowChanged?.call(_isFollowed);
-                  },
-                ),
-              ),
+                  child: BlocBuilder<SessionCubit, SessionState>(
+                    builder: (context, session) {
+                      return GestureDetector(
+                        child: Icon(
+                          widget.novel.isFollowing
+                              ? Icons.bookmark
+                              : Icons.bookmark_add,
+                          color: widget.novel.isFollowing
+                              ? Theme.of(context).primaryColor
+                              : Colors.white,
+                        ),
+                        onTap: () {
+                          if (session is! Authenticated) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                "Đăng nhập để theo dõi truyện",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ));
+                          } else {
+                            setState(() {
+                              widget.novel.isFollowing =
+                                  !widget.novel.isFollowing;
+                            });
+                            follow(widget.novel.id);
+                          }
+                        },
+                      );
+                    },
+                  )),
             ),
           ],
         ),

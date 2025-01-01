@@ -24,8 +24,10 @@ class GoogleButton extends StatelessWidget {
           ),
           onPressed: () async {
             final cubit = context.read<SessionCubit>();
-            await cubit.signInWithGoogle();
-            
+            final state = await cubit.signInWithGoogle();
+            if (state is Authenticated && context.mounted) {
+              Navigator.pushNamed(context, '/');
+            }
           },
           child: const Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),
