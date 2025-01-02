@@ -22,7 +22,7 @@ class _NovelChapterListState extends State<NovelChapterList> {
     return QueryClientBuilder(
         builder: (context, queryClient) => QueryBuilder<List<Chapter>, Error>(
                 [widget.novel.id, 'chapters', page],
-                () => Chapter.getChapters(novelId: widget.novel.id, page: 0),
+                () => Chapter.getChapters(novelId: widget.novel.id, page: 1),
                 refetchInterval: const Duration(seconds: 100),
                 builder: (context, data) {
               var chapters = data.data;

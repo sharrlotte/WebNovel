@@ -173,7 +173,6 @@ class NovelPage extends StatelessWidget {
                       child: NovelCard(
                         key: Key(data[index].id.toString()),
                         novel: data[index],
-                        onFollowChanged: (isFollowed) {},
                       ),
                     );
                   },

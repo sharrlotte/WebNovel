@@ -23,7 +23,7 @@ import { GoogleModule } from 'src/services/google/google.module';
 import { FollowsModule } from './services/follows/follows.module';
 import { RatingsModule } from './services/ratings/ratings.module';
 import { HistorysModule } from './services/historys/historys.module';
-
+import { LoggerModule } from 'nestjs-pino';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -32,12 +32,20 @@ import { HistorysModule } from './services/historys/historys.module';
       cache: true,
       load: [appConfig],
     }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+        },
+        level: 'info',
+      },
+    }),
+    NestjsFormDataModule.config({ isGlobal: true, storage: MemoryStoredFile }),
     CloudinaryModule,
     CategoryModule,
     DatabaseModule,
     GenesModule,
     NovelModule,
-    NestjsFormDataModule.config({ isGlobal: true, storage: MemoryStoredFile }),
     AuthModule,
     UsersModule,
     RoleModule,

@@ -34,6 +34,7 @@ class _ChapterPageState extends State<ChapterPage> {
                   ),
                   Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                             "Cập nhật: ${formatDate(widget.chapter.createdAt)}"),
@@ -51,6 +52,9 @@ class _ChapterPageState extends State<ChapterPage> {
                     style: const TextStyle(
                       fontSize: 14,
                     ),
+                  ),
+                  const SizedBox(
+                    height: 20,
                   ),
                   NextChapterButton(currentChapter: widget.chapter)
                 ],

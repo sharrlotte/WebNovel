@@ -6,12 +6,10 @@ import '../pages/novel_detail_page.dart';
 
 class NovelCard extends StatefulWidget {
   final Novel novel;
-  final Function(bool)? onFollowChanged;
 
   const NovelCard({
     required super.key,
     required this.novel,
-    this.onFollowChanged,
   });
 
   @override

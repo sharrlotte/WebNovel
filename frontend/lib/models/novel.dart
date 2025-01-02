@@ -4,7 +4,7 @@ import 'package:frontend/utils.dart';
 class Novel {
   final int id;
   final String name;
-  final String cover;
+  String cover;
   final String description;
   final String createdAt;
   final String author;
@@ -42,10 +42,37 @@ class Novel {
     String? sort,
     int? gene,
     String? status,
+    int? page = 1,
   }) async {
     return catchError(() async {
-      final res = await getApi().get('/novels',
-          queryParameters: {'sort': sort, 'gene': gene, 'status': status});
+      final res = await getApi().get('/novels', queryParameters: {
+        'sort': sort,
+        'gene': gene,
+        'status': status,
+        'page': page
+      });
+
+      final data = (res.data as List)
+          .map((e) => Novel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      return data;
+    });
+  }
+
+  static Future<List<Novel>> getMyNovels({
+    String? sort,
+    int? gene,
+    String? status,
+    int? page = 1,
+  }) async {
+    return catchError(() async {
+      final res = await getApi().get('/novels', queryParameters: {
+        'sort': sort,
+        'gene': gene,
+        'status': status,
+        'page': page
+      });
 
       final data = (res.data as List)
           .map((e) => Novel.fromJson(e as Map<String, dynamic>))

@@ -39,14 +39,27 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       actions: [
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
-          child: IconButton(
-            icon: const Icon(Icons.search, color: Colors.black),
-            onPressed: () {
-              // Xử lý tìm kiếm
-            },
-          ),
-        ),
+            margin: const EdgeInsets.symmetric(horizontal: 5),
+            child: IconButton(
+              icon: const Icon(Icons.search, color: Colors.black),
+              onPressed: () {
+                //TODO: Xử lý tìm kiếm
+              },
+            )),
+        BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
+          if (session is Authenticated) {
+            final avatar = session.session.user.avatar;
+
+            if (avatar != null) {
+              return CircleAvatar(
+                  backgroundImage: NetworkImage(avatar), radius: 12);
+            } else {
+              return const CircleAvatar();
+            }
+          }
+
+          return Container();
+        }),
         BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
           return PopupMenuButton<String>(
             icon: const Icon(Icons.menu, color: Colors.black),
@@ -63,7 +76,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             value: "downloads",
                             child: Text("Truyện đã tải xuống")),
                         const PopupMenuItem(
-                            value: "upload", child: Text("Đăng truyện")),
+                            value: "upload", child: Text("Truyện của tôi")),
                       ]
                     : [
                         const PopupMenuItem(

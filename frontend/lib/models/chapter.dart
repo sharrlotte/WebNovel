@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/utils.dart';
 
@@ -34,7 +33,7 @@ class Chapter {
     required int page,
   }) async {
     return catchError(() async {
-      final res = await Dio().get(
+      final res = await getApi().get(
           '${dotenv.env['API_URL']}/novels/$novelId/chapters',
           queryParameters: {
             'page': page,

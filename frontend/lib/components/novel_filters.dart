@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fquery/fquery.dart';
@@ -16,7 +15,7 @@ class NovelFilters extends StatelessWidget {
 
   Future<List<Category>> getCategories() async {
     return catchError(() async {
-      final res = await Dio().get(
+      final res = await getApi().get(
         '${dotenv.env['API_URL']}/categories',
       );
 

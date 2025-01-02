@@ -7,7 +7,10 @@ import {
 import { CreateNovelDto } from './dto/create-novel.dto';
 import { UpdateNovelDto } from './dto/update-novel.dto';
 import { DatabaseService } from 'src/services/database/database.service';
-import { GetAllNovelQuery } from 'src/services/novel/dto/get-all-novel-query.dto';
+import {
+  GetAllNovelQuery,
+  sortMapping,
+} from 'src/services/novel/dto/get-all-novel-query.dto';
 import { SessionDto } from 'src/services/auth/dto/session.dto';
 
 @Injectable()
@@ -27,21 +30,6 @@ export class NovelService {
     });
   }
 
-  sortMapping = {
-    latest_update: {
-      updatedAt: 'desc',
-    },
-    most_liked: {
-      rating: 'desc',
-    },
-    most_viewed: {
-      view: 'desc',
-    },
-    chapter_count: {
-      chapter: 'desc',
-    },
-  };
-
   async findManyChapters(novelId: number, page: number) {
     return this.databaseService.chapter
       .findMany({
@@ -55,8 +43,8 @@ export class NovelService {
             },
           },
         },
-        skip: page * 30,
-        take: 30,
+        skip: (page - 1) * 20,
+        take: 20,
       })
       .then((res) =>
         res.map((chapter) => ({ comment: chapter._count.Comment, ...chapter })),
@@ -78,7 +66,7 @@ export class NovelService {
   }
 
   async findAll(query: GetAllNovelQuery, session: SessionDto) {
-    const { status, sort, gene } = query;
+    const { status, sort, gene, page } = query;
 
     let q = {};
     let s = undefined;
@@ -90,7 +78,7 @@ export class NovelService {
     }
 
     if (sort) {
-      s = this.sortMapping[sort];
+      s = sortMapping[sort];
     }
 
     if (gene) {
@@ -121,6 +109,8 @@ export class NovelService {
                 },
               },
       },
+      skip: 20 * (page - 1),
+      take: 20,
     });
 
     return result.map((item) => ({

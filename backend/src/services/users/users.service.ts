@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 
 import { Prisma, User } from '@prisma/client';
 import NotFound from 'src/error/NotFound';
+import { SessionDto } from 'src/services/auth/dto/session.dto';
 import { DatabaseService } from 'src/services/database/database.service';
+import {
+  GetAllNovelQuery,
+  sortMapping,
+} from 'src/services/novel/dto/get-all-novel-query.dto';
 import { AuthProvider } from 'src/types/auth';
 
 type UserWithAuthoritiesAndRoles = Prisma.UserGetPayload<{}> & {
@@ -99,5 +104,62 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async getMyNovel(session: SessionDto, query: GetAllNovelQuery) {
+    const { status, sort, gene, page } = query;
+
+    let q = {};
+    let s = undefined;
+
+    if (status && status !== 'all') {
+      q = {
+        status: status,
+      };
+    }
+
+    if (sort) {
+      s = sortMapping[sort];
+    }
+
+    if (gene) {
+      q = {
+        ...q,
+        categories: {
+          some: {
+            category: {
+              id: parseInt(gene),
+            },
+          },
+        },
+      };
+    }
+
+    const result = await this.prisma.novel.findMany({
+      where: {
+        ...q,
+        userId: session.id,
+      },
+      orderBy: s,
+      include: {
+        user: true,
+        categories: true,
+        follows:
+          session === null
+            ? false
+            : {
+                where: {
+                  userId: session.id,
+                },
+              },
+      },
+      skip: 20 * (page - 1),
+      take: 20,
+    });
+
+    return result.map((item) => ({
+      ...item,
+      isFollowing: item.follows?.length === 1,
+    }));
   }
 }

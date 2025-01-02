@@ -21,14 +21,17 @@ export class CloudinaryService {
 
     return await new Promise<UploadApiResponse>((resolve, reject) => {
       cloudinary.uploader
-        .upload_stream({ folder, format: 'jpg', public_id: publicId }, (error, result) => {
-          if (result) {
-            return resolve(result);
-          }
-          return reject(new BadRequestException(error?.message));
-        })
+        .upload_stream(
+          { folder, format: 'jpg', public_id: publicId },
+          (error, result) => {
+            if (result) {
+              return resolve(result);
+            }
+            return reject(new BadRequestException(error?.message));
+          },
+        )
         .end(imageBuffer);
-    });
+    }).then((result) => ({ url: result.url }));
   }
 
   async deleteImage(url: string) {

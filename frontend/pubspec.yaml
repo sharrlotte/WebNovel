@@ -20,6 +20,8 @@ dependencies:
   flutter_hooks: ^0.20.5
   pull_to_refresh_flutter3: ^2.0.2
   intl: ^0.20.1
+  image_picker: ^1.1.2
+  flutter_secure_storage: ^9.2.2
 
 dev_dependencies:
   flutter_test:

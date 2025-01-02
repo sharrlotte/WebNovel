@@ -26,6 +26,13 @@ export class ChaptersService {
       );
     }
 
+    this.databaseService.novel.update({
+      where: { id: createChapterDto.novelId },
+      data: {
+        createdAt: new Date(),
+      },
+    });
+
     return this.databaseService.chapter.create({
       data: createChapterDto,
     });

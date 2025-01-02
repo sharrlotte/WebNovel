@@ -17,6 +17,10 @@ export class AuthMiddleware implements NestMiddleware {
     if (!token) {
       token = req?.headers?.['Authorization'] as string | undefined;
 
+      if (!token) {
+        token = req?.headers?.['authorization'] as string | undefined;
+      }
+
       token = token && token.replaceAll('Bearer ', '');
     }
 
