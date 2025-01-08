@@ -14,6 +14,8 @@ class CommentList extends StatelessWidget {
     return QueryClientBuilder(
         builder: (context, queryClient) => Column(
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -29,6 +31,13 @@ class CommentList extends StatelessWidget {
                     IconButton(
                         onPressed: () async {
                           try {
+                            if (contentController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text("Vui lòng nhập bình luận")));
+                              return;
+                            }
                             await Novel.createComments(
                                 id: novel.id, content: contentController.text);
                             contentController.clear();
@@ -48,6 +57,11 @@ class CommentList extends StatelessWidget {
                 ),
                 const SizedBox(
                   height: 20,
+                ),
+                Text("Bình luận: ${novel.commentCount}",
+                    textAlign: TextAlign.start),
+                const SizedBox(
+                  height: 10,
                 ),
                 QueryBuilder(['comments', novel.id],
                     () => Novel.getComments(id: novel.id),
@@ -104,4 +118,3 @@ class CommentList extends StatelessWidget {
             ));
   }
 }
-

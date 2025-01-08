@@ -5,6 +5,7 @@ import 'package:frontend/components/comment_list.dart';
 import 'package:frontend/components/custom_app_bar.dart';
 import 'package:frontend/components/my_chapter_list.dart';
 import 'package:frontend/models/api.dart';
+import 'package:frontend/models/category.dart';
 import 'package:frontend/models/novel.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -209,6 +210,7 @@ class _EditNovelState extends State<EditNovel> {
   final ImagePicker _picker = ImagePicker();
 
   late String selectedStatus;
+  List<Category> selectedCategories = [];
 
   @override
   void initState() {
@@ -218,11 +220,13 @@ class _EditNovelState extends State<EditNovel> {
     authorController.text = widget.novel.author;
     descriptionController.text = widget.novel.description;
     selectedStatus = widget.novel.status;
+    selectedCategories = widget.novel.categories;
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextButton(
             onPressed: () async {
@@ -244,7 +248,7 @@ class _EditNovelState extends State<EditNovel> {
               try {
                 var url = await Api.uploadImage(file);
 
-                Novel.updateNovelCover(id: widget.novel.id, url: url);
+                await Novel.updateNovelCover(id: widget.novel.id, url: url);
 
                 setState(() {
                   widget.novel.cover = url;
@@ -329,6 +333,64 @@ class _EditNovelState extends State<EditNovel> {
         const SizedBox(
           height: 10,
         ),
+        const Text("Thể loại"),
+        const SizedBox(
+          height: 8,
+        ),
+        Wrap(
+          children: selectedCategories
+              .map((item) => TextButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedCategories = selectedCategories
+                          .where((i) => i.id != item.id)
+                          .toList();
+                    });
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [Text(item.name), const Icon(Icons.close)],
+                  )))
+              .toList(),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        QueryBuilder(
+            const ['categories'], //
+            Category.getCategories, //
+            builder: (context, query) {
+          final categories = query.data ?? [];
+
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<Category>(
+                isExpanded: true,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                hint: const Text('Thêm thể loại'),
+                items: categories
+                    .where((item) =>
+                        !selectedCategories.map((i) => i.id).contains(item.id))
+                    .map((genre) => DropdownMenuItem<Category>(
+                          value: genre,
+                          child: Text(genre.name),
+                        ))
+                    .toList(),
+                onChanged: (Category? newValue) {
+                  setState(() {
+                    if (newValue != null) {
+                      selectedCategories = [...selectedCategories, newValue];
+                    }
+                  });
+                },
+              ),
+            ),
+          );
+        }),
         TextField(
             maxLines: null,
             keyboardType: TextInputType.multiline,
@@ -343,20 +405,23 @@ class _EditNovelState extends State<EditNovel> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   try {
-                    Novel.updateNovel(
+                    await Novel.updateNovel(
                         id: widget.novel.id,
                         name: titleController.text,
                         description: descriptionController.text,
                         author: authorController.text,
-                        status: selectedStatus);
+                        status: selectedStatus,
+                        categoryIds:
+                            selectedCategories.map((i) => i.id).toList());
 
                     setState(() {
                       widget.novel.author = authorController.text;
                       widget.novel.description = descriptionController.text;
                       widget.novel.name = titleController.text;
                       widget.novel.status = selectedStatus;
+                      widget.novel.categories = selectedCategories;
                     });
 
                     if (context.mounted) {

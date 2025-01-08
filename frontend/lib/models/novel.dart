@@ -9,9 +9,11 @@ class Novel {
   String description;
   String author;
   String status;
+  int commentCount;
+  int view;
   bool isFollowing;
   final String createdAt;
-  final List<Category> categories;
+  List<Category> categories;
 
   Novel(
       {required this.id,
@@ -21,10 +23,13 @@ class Novel {
       required this.description,
       required this.createdAt,
       required this.status,
+      required this.commentCount,
+      required this.view,
       required this.categories,
       required this.isFollowing});
 
   static Novel fromJson(Map<String, dynamic> data) {
+    print(data);
     return Novel(
         id: data['id'],
         name: data['name'],
@@ -34,6 +39,8 @@ class Novel {
         createdAt: data['createdAt'],
         status: data['status'] ?? 'COMPLETED',
         isFollowing: data['isFollowing'] ?? false,
+        commentCount: data['commentCount'] ?? 0,
+        view: data['view'] ?? 0,
         categories: (data['categories'] ?? [])
             .map((e) => Category.fromJson(e))
             .cast<Category>()
@@ -162,13 +169,15 @@ class Novel {
       required String name,
       required String description,
       required String status,
-      required String author}) {
+      required String author,
+      required List<int> categoryIds}) {
     return catchError(() async {
       final res = await getApi().patch('/novels/$id', data: {
         'name': name,
         'description': description,
         'status': status,
-        'author': author
+        'author': author,
+        'categoryIds': categoryIds,
       });
 
       return res;
@@ -179,13 +188,15 @@ class Novel {
       {required String name,
       required String description,
       required String author,
-      required String cover}) {
+      required String cover,
+      required List<int> categoryIds}) {
     return catchError(() async {
       final res = await getApi().post('/novels', data: {
         'name': name,
         'description': description,
         'author': author,
-        'cover': cover
+        'cover': cover,
+        'categoryIds': categoryIds
       });
 
       return (res.data);

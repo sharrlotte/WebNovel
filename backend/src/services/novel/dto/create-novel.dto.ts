@@ -34,4 +34,7 @@ export class CreateNovelDto {
   @IsNotEmpty()
   @Expose()
   author: string;
+
+  @Expose()
+  categoryIds: string[];
 }

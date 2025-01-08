@@ -32,15 +32,15 @@ import { LoggerModule } from 'nestjs-pino';
       cache: true,
       load: [appConfig],
     }),
-    // LoggerModule.forRoot({
-    //   pinoHttp: {
-    //     transport: {
-    //       target: 'pino-pretty',
-    //     },
-    //     level: 'warn',
-    //     quietReqLogger: true,
-    //   },
-    // }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+        },
+        level: 'warn',
+        quietReqLogger: true,
+      },
+    }),
     NestjsFormDataModule.config({ isGlobal: true, storage: MemoryStoredFile }),
     CloudinaryModule,
     CategoryModule,

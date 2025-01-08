@@ -145,7 +145,11 @@ export class UsersService {
       orderBy: s,
       include: {
         user: true,
-        categories: true,
+        categories: {
+          select: {
+            category: true,
+          },
+        },
         follows:
           session === null
             ? false
@@ -161,6 +165,7 @@ export class UsersService {
 
     return result.map((item) => ({
       ...item,
+      categories: item.categories.map((c) => c.category),
       isFollowing: item.follows?.length === 1,
     }));
   }
@@ -209,7 +214,11 @@ export class UsersService {
       orderBy: s,
       include: {
         user: true,
-        categories: true,
+        categories: {
+          select: {
+            category: true,
+          },
+        },
       },
       skip: 20 * (page - 1),
       take: 20,
@@ -217,6 +226,7 @@ export class UsersService {
 
     return result.map((item) => ({
       ...item,
+      categories: item.categories.map((c) => c.category),
       isFollowing: true,
     }));
   }

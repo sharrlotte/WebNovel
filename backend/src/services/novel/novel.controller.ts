@@ -147,6 +147,19 @@ export class NovelController {
       this.novelService.addChapterComment(id, chapterId, session.id, payload),
     );
   }
+  @Post(':id/chapters/:chapterId/view')
+  view(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('chapterId', ParseIntPipe) chapterId: number,
+    @Req() req: Request,
+  ) {
+    const session = getSession(req);
+
+    return plainToInstance(
+      CommentDto,
+      this.novelService.view(id, chapterId, session.id),
+    );
+  }
   @Get(':id/chapters/:chapterId/comments')
   getChapterComments(
     @Param('id', ParseIntPipe) id: number,

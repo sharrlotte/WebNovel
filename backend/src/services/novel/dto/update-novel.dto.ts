@@ -20,4 +20,7 @@ export class UpdateNovelDto extends PartialType(CreateNovelDto) {
   @Expose()
   @IsNotEmpty()
   status: NovelStatus;
+  
+  @Expose()
+  categoryIds?: string[];
 }

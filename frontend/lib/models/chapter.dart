@@ -23,7 +23,7 @@ class Chapter {
     return Chapter(
         id: json['id'],
         name: json['name'],
-        content: json['content'],
+        content: json['content'] ?? '',
         createdAt: DateTime.parse(json['createdAt']),
         novelId: json['novelId'],
         comment: ((json['comment'] ?? 0) as int));
@@ -108,6 +108,14 @@ class Chapter {
           .post('/novels/$id/chapters/$chapterId/comments', data: {
         'content': content,
       });
+
+      return res.data;
+    });
+  }
+
+  static Future<dynamic> view({required int id, required int chapterId}) {
+    return catchError(() async {
+      final res = await getApi().post('/novels/$id/chapters/$chapterId/view');
 
       return res.data;
     });

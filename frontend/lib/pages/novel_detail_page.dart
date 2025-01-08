@@ -94,6 +94,16 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                   ),
                   Text(widget.novel.description),
                   const SizedBox(height: 16),
+                  // Mô  /
+                  const Text(
+                    'Lượt xem:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(widget.novel.view.toString()),
+                  const SizedBox(height: 16),
                   // Danh sách chapter
                   NovelChapterList(novel: widget.novel),
                   CommentList(novel: widget.novel)

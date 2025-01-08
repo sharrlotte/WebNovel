@@ -21,6 +21,15 @@ class _ChapterPageState extends State<ChapterPage> {
   void initState() {
     super.initState();
     _saveReadingHistory();
+    view();
+  }
+
+  void view() {
+    try {
+      Chapter.view(id: widget.chapter.novelId, chapterId: widget.chapter.id);
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _saveReadingHistory() async {
@@ -108,7 +117,7 @@ class _ChapterPageState extends State<ChapterPage> {
                             const SizedBox(
                               height: 20,
                             ),
-                            Spacer(),
+                            const Spacer(),
                             NextChapterButton(currentChapter: widget.chapter),
                             const Divider(),
                             ChapterCommentList(chapter: widget.chapter)

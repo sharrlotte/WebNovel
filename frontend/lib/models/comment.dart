@@ -18,7 +18,6 @@ class Comment {
   });
 
   static Comment fromJson(Map<String, dynamic> data) {
-    print(data);
     return Comment(
         id: data['id'],
         content: data['content'],

@@ -39,7 +39,7 @@ class NovelFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return QueryBuilder(
-        const ['category'], //
+        const ['categories'], //
         getCategories, //
         builder: (context, categories) {
       List<Category> data = categories.isLoading

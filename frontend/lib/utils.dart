@@ -11,8 +11,9 @@ String formatDate(DateTime date) {
 Future<T> catchError<T>(Function() fn) async {
   try {
     return await fn();
-  } catch (exception) {
-    return Future.error(StateError("Lỗi không tải được dữ liệu: $exception"));
+  } on DioException catch (exception) {
+    return Future.error(
+        StateError("Lỗi không tải được dữ liệu: ${exception.response?.data}"));
   }
 }
 

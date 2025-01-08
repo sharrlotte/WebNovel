@@ -26,6 +26,13 @@ export class NovelService {
         ...createNovelDto,
         userId,
         status: NovelStatus.ON_GOING,
+        categories: {
+          createMany: {
+            data: createNovelDto.categoryIds
+              .map((i) => parseInt(i))
+              .map((categoryId) => ({ categoryId })),
+          },
+        },
       },
     });
   }
@@ -101,7 +108,11 @@ export class NovelService {
       orderBy: s,
       include: {
         user: true,
-        categories: true,
+        categories: {
+          select: {
+            category: true,
+          },
+        },
         follows:
           session === null
             ? false
@@ -117,6 +128,7 @@ export class NovelService {
 
     return result.map((item) => ({
       ...item,
+      categories: item.categories.map((c) => c.category),
       isFollowing: item.follows?.length === 1,
     }));
   }
@@ -134,11 +146,26 @@ export class NovelService {
   }
 
   async addComment(id: number, userId: number, payload: CreateCommentDto) {
-    return this.databaseService.comment.create({
+    await this.databaseService.comment.create({
       data: {
         ...payload,
         userId: userId,
         novelId: id,
+      },
+    });
+
+    const comments = await this.databaseService.comment.count({
+      where: {
+        novelId: id,
+      },
+    });
+
+    await this.databaseService.novel.update({
+      where: {
+        id,
+      },
+      data: {
+        commentCount: comments,
       },
     });
   }
@@ -149,12 +176,76 @@ export class NovelService {
     userId: number,
     payload: CreateCommentDto,
   ) {
-    return this.databaseService.comment.create({
+    await this.databaseService.comment.create({
       data: {
         ...payload,
         chapterId,
         userId: userId,
         novelId: id,
+      },
+    });
+    const [comments, chapterComments] = await Promise.all([
+      this.databaseService.comment.count({
+        where: {
+          novelId: id,
+        },
+      }),
+
+      this.databaseService.comment.count({
+        where: {
+          novelId: id,
+          chapterId,
+        },
+      }),
+    ]);
+
+    await Promise.all([
+      this.databaseService.novel.update({
+        where: {
+          id,
+        },
+        data: {
+          commentCount: comments,
+        },
+      }),
+      this.databaseService.chapter.update({
+        where: {
+          id: chapterId,
+        },
+        data: {
+          comment: chapterComments,
+        },
+      }),
+    ]);
+  }
+
+  async view(id: number, chapterId: number, userId: number) {
+    await Promise.allSettled([
+      this.databaseService.view.create({
+        data: {
+          novelId: id,
+          userId,
+          chapterId,
+        },
+      }),
+      this.databaseService.history.create({
+        data: {
+          novelId: id,
+          userId,
+        },
+      }),
+    ]);
+
+    const views = await this.databaseService.view.count({
+      where: {
+        novelId: id,
+      },
+    });
+
+    await this.databaseService.novel.update({
+      where: { id },
+      data: {
+        view: views,
       },
     });
   }
@@ -195,6 +286,9 @@ export class NovelService {
       include: {
         user: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
@@ -206,6 +300,9 @@ export class NovelService {
       },
       include: {
         user: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
   }
@@ -249,75 +346,78 @@ export class NovelService {
     }
   }
 
-  async update(id: number, updateNovelDto: UpdateNovelDto, userId: number) {
+  async update(
+    id: number,
+    { categoryIds, ...updateNovelDto }: UpdateNovelDto,
+    userId: number,
+  ) {
     const novel = await this.findOne(id);
     if (novel.userId !== userId) {
       throw new ForbiddenException('Bạn không có quyền sửa novel này');
     }
-    try {
-      const currentNovel = await this.databaseService.novel.findUnique({
-        where: { id },
-      });
+    const currentNovel = await this.databaseService.novel.findUnique({
+      where: { id },
+    });
 
-      if (!currentNovel) {
-        throw new NotFoundException(`Novel với ID ${id} không tồn tại`);
-      }
-
-      // Kiểm tra view
-      if (
-        'view' in updateNovelDto &&
-        updateNovelDto.view !== currentNovel.view
-      ) {
-        throw new BadRequestException(
-          'Bạn không được phép sửa số lượt xem của truyện',
-        );
-      }
-
-      // Kiểm tra updatedAt
-
-      // Kiểm tra rating
-      if (
-        'rating' in updateNovelDto &&
-        updateNovelDto.rating !== currentNovel.rating
-      ) {
-        throw new BadRequestException(
-          'Bạn không được phép sửa điểm đánh giá của truyện',
-        );
-      }
-
-      // Kiểm tra followerCount
-      if (
-        'followerCount' in updateNovelDto &&
-        updateNovelDto.followerCount !== currentNovel.followerCount
-      ) {
-        throw new BadRequestException(
-          'Bạn không được phép sửa số người theo dõi truyện',
-        );
-      }
-
-      // Kiểm tra commentCount
-      if (
-        'commentCount' in updateNovelDto &&
-        updateNovelDto.commentCount !== currentNovel.commentCount
-      ) {
-        throw new BadRequestException(
-          'Bạn không được phép sửa số lượng bình luận',
-        );
-      }
-
-      return await this.databaseService.novel.update({
-        where: { id },
-        data: updateNovelDto,
-      });
-    } catch (error) {
-      if (
-        error instanceof BadRequestException ||
-        error instanceof NotFoundException
-      ) {
-        throw error;
-      }
-      throw new BadRequestException('Không thể sửa UserId.');
+    if (!currentNovel) {
+      throw new NotFoundException(`Novel với ID ${id} không tồn tại`);
     }
+
+    // Kiểm tra view
+    if ('view' in updateNovelDto && updateNovelDto.view !== currentNovel.view) {
+      throw new BadRequestException(
+        'Bạn không được phép sửa số lượt xem của truyện',
+      );
+    }
+
+    // Kiểm tra updatedAt
+
+    // Kiểm tra rating
+    if (
+      'rating' in updateNovelDto &&
+      updateNovelDto.rating !== currentNovel.rating
+    ) {
+      throw new BadRequestException(
+        'Bạn không được phép sửa điểm đánh giá của truyện',
+      );
+    }
+
+    // Kiểm tra followerCount
+    if (
+      'followerCount' in updateNovelDto &&
+      updateNovelDto.followerCount !== currentNovel.followerCount
+    ) {
+      throw new BadRequestException(
+        'Bạn không được phép sửa số người theo dõi truyện',
+      );
+    }
+
+    // Kiểm tra commentCount
+    if (
+      'commentCount' in updateNovelDto &&
+      updateNovelDto.commentCount !== currentNovel.commentCount
+    ) {
+      throw new BadRequestException(
+        'Bạn không được phép sửa số lượng bình luận',
+      );
+    }
+
+    if (categoryIds) {
+      await this.databaseService.novelCategory.deleteMany({
+        where: { novelId: id },
+      });
+      await this.databaseService.novelCategory.createMany({
+        data: categoryIds.map((categoryId) => ({
+          novelId: id,
+          categoryId: parseInt(categoryId),
+        })),
+      });
+    }
+
+    return await this.databaseService.novel.update({
+      where: { id },
+      data: updateNovelDto,
+    });
   }
 
   async remove(id: number, userId: number) {
