@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/chapter_list.dart';
+import 'package:frontend/components/comment_list.dart';
 import 'package:frontend/components/custom_app_bar.dart';
 import 'package:frontend/models/novel.dart';
 
@@ -95,6 +96,7 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                   const SizedBox(height: 16),
                   // Danh sách chapter
                   NovelChapterList(novel: widget.novel),
+                  CommentList(novel: widget.novel)
                 ],
               ),
             ),

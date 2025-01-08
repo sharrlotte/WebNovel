@@ -16,11 +16,13 @@ class MyNovelChapterList extends StatefulWidget {
 }
 
 class _MyNovelChapterListState extends State<MyNovelChapterList> {
-  int page = 0;
+  int page = 1;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,11 +64,10 @@ class _MyNovelChapterListState extends State<MyNovelChapterList> {
         ),
         QueryClientBuilder(
             builder: (context, queryClient) =>
-                QueryBuilder<List<Chapter>, Error>([
-                  widget.novel.id,
-                  'chapters',
-                  page
-                ], () => Chapter.getChapters(novelId: widget.novel.id, page: 1),
+                QueryBuilder<List<Chapter>, Error>(
+                    [widget.novel.id, 'chapters', page],
+                    () => Chapter.getChapters(
+                        novelId: widget.novel.id, page: page),
                     refetchInterval: const Duration(seconds: 100),
                     builder: (context, data) {
                   var chapters = data.data;
@@ -76,33 +77,84 @@ class _MyNovelChapterListState extends State<MyNovelChapterList> {
                   }
 
                   if (data.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: CircularProgressIndicator()),
+                    );
                   }
 
                   if (chapters == null || chapters.isEmpty) {
                     return const Text("Không có chương");
                   }
 
+                  final hasNextPage = chapters.length == 20;
+                  final hasPreviousPage = page > 1;
+
                   return Column(
-                      children: chapters
-                          .map((chapter) => GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChapterPage(chapter: chapter),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: chapters
+                              .map((chapter) => GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ChapterPage(chapter: chapter),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      chapter.name,
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ))
+                              .toList()),
+                      Row(
+                        children: [
+                          hasPreviousPage
+                              ? Expanded(
+                                  child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      page--;
+                                    });
+                                  },
+                                  child: Text('Quay lại'),
+                                ))
+                              : Container(),
+                          const SizedBox(width: 8),
+                          hasNextPage
+                              ? Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        page++;
+                                      });
+                                    },
+                                    child: Text('Load thêm'),
                                   ),
-                                );
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 10, bottom: 10),
-                                child: Text(
-                                  chapter.name,
-                                ),
-                              )))
-                          .toList());
+                                )
+                              : Container(),
+                          const SizedBox(width: 8),
+                          page != 1
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      page = 1;
+                                    });
+                                  },
+                                  child: Text('Quay về đầu'),
+                                )
+                              : Container(),
+                        ],
+                      )
+                    ],
+                  );
                 }))
       ],
     );

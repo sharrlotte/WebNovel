@@ -129,11 +129,11 @@ model View {
 
 model Comment {
     id        Int      @id @default(autoincrement())
-    chapterId Int
+    chapterId Int?
     userId    Int
     content   String
     createdAt DateTime @default(now())
-    chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+    chapter   Chapter?  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     Novel     Novel?   @relation(fields: [novelId], references: [id])
     novelId   Int?

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fquery/fquery.dart';
+import 'package:frontend/components/chapter_comment_list.dart';
 import 'package:frontend/models/chapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -66,45 +67,55 @@ class _ChapterPageState extends State<ChapterPage> {
           elevation: 0,
         ),
         backgroundColor: const Color.fromARGB(255, 234, 228, 211),
-        body: SingleChildScrollView(
-          child: Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Text(
-                    widget.chapter.name,
-                    style: const TextStyle(
-                      fontSize: 22,
-                    ),
-                  ),
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                            "Cập nhật: ${formatDate(widget.chapter.createdAt)}"),
-                        Text("Độ dài: ${widget.chapter.content.length} từ"),
-                        Text("Bình luận: ${widget.chapter.comment}")
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    widget.chapter.content,
-                    softWrap: true,
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  NextChapterButton(currentChapter: widget.chapter)
-                ],
-              )),
-        ));
+        body: LayoutBuilder(builder: (context, constraints) {
+          return SingleChildScrollView(
+              child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Text(
+                              widget.chapter.name,
+                              style: const TextStyle(
+                                fontSize: 22,
+                              ),
+                            ),
+                            Center(
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                      "Cập nhật: ${formatDate(widget.chapter.createdAt)}"),
+                                  Text(
+                                      "Độ dài: ${widget.chapter.content.length} từ"),
+                                  Text("Bình luận: ${widget.chapter.comment}")
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              widget.chapter.content,
+                              softWrap: true,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Spacer(),
+                            NextChapterButton(currentChapter: widget.chapter),
+                            const Divider(),
+                            ChapterCommentList(chapter: widget.chapter)
+                          ],
+                        )),
+                  )));
+        }));
   }
 }
 
@@ -128,7 +139,8 @@ class NextChapterButton extends StatelessWidget {
 
       if (query.isLoading) {
         return const Center(
-          child: CircularProgressIndicator(),
+          child: Padding(
+              padding: EdgeInsets.all(10), child: CircularProgressIndicator()),
         );
       }
 

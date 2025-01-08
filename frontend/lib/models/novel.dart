@@ -1,4 +1,5 @@
 import 'package:frontend/models/category.dart';
+import 'package:frontend/models/comment.dart';
 import 'package:frontend/utils.dart';
 
 class Novel {
@@ -120,6 +121,31 @@ class Novel {
       final res = await getApi().patch('/novels/$id', data: {'cover': url});
 
       return res;
+    });
+  }
+
+  static Future<List<Comment>> getComments({required int id}) {
+    return catchError(() async {
+      final res = await getApi().get(
+        '/novels/$id/comments',
+      );
+
+      final data = (res.data as List)
+          .map((e) => Comment.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      return data;
+    });
+  }
+
+  static Future<dynamic> createComments(
+      {required int id, required String content}) {
+    return catchError(() async {
+      final res = await getApi().post('/novels/$id/comments', data: {
+        'content': content,
+      });
+
+      return res.data;
     });
   }
 

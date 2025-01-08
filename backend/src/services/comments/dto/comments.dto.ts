@@ -1,6 +1,4 @@
-import { Expose } from 'class-transformer';
-import ChapterDto from 'src/services/chapters/dto/chapter.dto';
-import NovelDto from 'src/services/novel/dto/novel.dto';
+import { Expose, Type } from 'class-transformer';
 import { UserResponse } from 'src/services/users/dto/user.response';
 
 export default class CommentDto {
@@ -20,14 +18,9 @@ export default class CommentDto {
   createdAt: Date;
 
   @Expose()
-  chapter: ChapterDto;
-
-  @Expose()
+  @Type(() => UserResponse)
   user: UserResponse;
 
   @Expose()
   novelId?: number;
-
-  @Expose()
-  Novel?: NovelDto;
 }

@@ -11,7 +11,10 @@ class GoogleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
       if (session is SessionLoading) {
-        return const CircularProgressIndicator();
+        return const Center(
+          child: Padding(
+              padding: EdgeInsets.all(10), child: CircularProgressIndicator()),
+        );
       }
 
       if (session is! Authenticated) {

@@ -32,7 +32,11 @@ class FavoritesPage extends StatelessWidget {
                   }
 
                   if (data.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: CircularProgressIndicator()),
+                    );
                   }
 
                   if (novels == null || novels.isEmpty) {

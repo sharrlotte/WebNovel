@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/models/comment.dart';
 import 'package:frontend/utils.dart';
 
 class Chapter {
@@ -72,6 +73,43 @@ class Chapter {
       }
 
       return Chapter.fromJson(res.data);
+    });
+  }
+
+  static Future<dynamic> addChapter(
+      {required int novelId, required String name, required String content}) {
+    return catchError(() async {
+      final res = await getApi().post('/novels/$novelId/chapters',
+          data: {'name': name, 'content': content});
+
+      return res.data;
+    });
+  }
+
+  static Future<List<Comment>> getComments(
+      {required int id, required int chapterId}) {
+    return catchError(() async {
+      final res = await getApi().get(
+        '/novels/$id/chapters/$chapterId/comments',
+      );
+
+      final data = (res.data as List)
+          .map((e) => Comment.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      return data;
+    });
+  }
+
+  static Future<dynamic> createComments(
+      {required int id, required int chapterId, required String content}) {
+    return catchError(() async {
+      final res = await getApi()
+          .post('/novels/$id/chapters/$chapterId/comments', data: {
+        'content': content,
+      });
+
+      return res.data;
     });
   }
 }

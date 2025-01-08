@@ -13,7 +13,7 @@ export class CommentsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async create(createCommentDto: CreateCommentDto, userId: number) {
-    const { chapterId, content, novelId } = createCommentDto;
+    const { chapterId, content } = createCommentDto;
 
     // Chỉ kiểm tra độ dài nội dung
     const trimmedContent = content.trim();
@@ -36,7 +36,6 @@ export class CommentsService {
         content: trimmedContent,
         userId: userId,
         chapterId,
-        novelId,
       },
       include: {
         user: true,

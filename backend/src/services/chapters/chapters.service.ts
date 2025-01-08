@@ -1,42 +1,14 @@
 import {
   Injectable,
   NotFoundException,
-  ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { CreateChapterDto } from './dto/create-chapter.dto';
 import { UpdateChapterDto } from './dto/update-chapter.dto';
 import { DatabaseService } from 'src/services/database/database.service';
 
 @Injectable()
 export class ChaptersService {
   constructor(private readonly databaseService: DatabaseService) {}
-
-  async create(createChapterDto: CreateChapterDto) {
-    const existingChapter = await this.databaseService.chapter.findFirst({
-      where: {
-        novelId: createChapterDto.novelId,
-        name: createChapterDto.name,
-      },
-    });
-
-    if (existingChapter) {
-      throw new ConflictException(
-        'Chapter với tên này đã tồn tại trong novel này',
-      );
-    }
-
-    this.databaseService.novel.update({
-      where: { id: createChapterDto.novelId },
-      data: {
-        createdAt: new Date(),
-      },
-    });
-
-    return this.databaseService.chapter.create({
-      data: createChapterDto,
-    });
-  }
 
   async findAll() {
     try {

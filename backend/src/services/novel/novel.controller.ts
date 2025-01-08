@@ -20,6 +20,9 @@ import { Request } from 'express';
 import { GetAllNovelQuery } from 'src/services/novel/dto/get-all-novel-query.dto';
 import ChapterDto from 'src/services/chapters/dto/chapter.dto';
 import { FollowResultDto } from 'src/services/novel/dto/follow-result.dto';
+import { CreateChapterDto } from 'src/services/chapters/dto/create-chapter.dto';
+import CommentDto from 'src/services/comments/dto/comments.dto';
+import { CreateCommentDto } from 'src/services/comments/dto/create-comment.dto';
 
 @Controller('novels')
 export class NovelController {
@@ -95,6 +98,63 @@ export class NovelController {
       FollowResultDto,
       this.novelService.follow(id, session.id),
     );
+  }
+
+  @Post(':id/chapters')
+  addChapter(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Body() payload: CreateChapterDto,
+  ) {
+    const session = getSession(req);
+
+    return plainToInstance(
+      CommentDto,
+      this.novelService.addChapter(id, session.id, payload),
+    );
+  }
+
+  @Post(':id/comments')
+  addComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Body() payload: CreateCommentDto,
+  ) {
+    const session = getSession(req);
+
+    return plainToInstance(
+      CommentDto,
+      this.novelService.addComment(id, session.id, payload),
+    );
+  }
+  @Get(':id/comments')
+  getComments(@Param('id', ParseIntPipe) id: number) {
+    return this.novelService
+      .getComments(id)
+      .then((items) => items.map((item) => plainToInstance(CommentDto, item)));
+  }
+  @Post(':id/chapters/:chapterId/comments')
+  addChapterComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('chapterId', ParseIntPipe) chapterId: number,
+    @Req() req: Request,
+    @Body() payload: CreateCommentDto,
+  ) {
+    const session = getSession(req);
+
+    return plainToInstance(
+      CommentDto,
+      this.novelService.addChapterComment(id, chapterId, session.id, payload),
+    );
+  }
+  @Get(':id/chapters/:chapterId/comments')
+  getChapterComments(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('chapterId', ParseIntPipe) chapterId: number,
+  ) {
+    return this.novelService
+      .getChapterComments(id, chapterId)
+      .then((items) => items.map((item) => plainToInstance(CommentDto, item)));
   }
 
   @Delete(':id')

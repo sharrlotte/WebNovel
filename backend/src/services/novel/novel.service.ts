@@ -13,6 +13,8 @@ import {
 } from 'src/services/novel/dto/get-all-novel-query.dto';
 import { SessionDto } from 'src/services/auth/dto/session.dto';
 import { NovelStatus } from 'src/services/novel/enums/novel-status.enum';
+import { CreateChapterDto } from 'src/services/chapters/dto/create-chapter.dto';
+import { CreateCommentDto } from 'src/services/comments/dto/create-comment.dto';
 
 @Injectable()
 export class NovelService {
@@ -127,6 +129,83 @@ export class NovelService {
         chapters: true,
         comments: true,
         ratings: true,
+      },
+    });
+  }
+
+  async addComment(id: number, userId: number, payload: CreateCommentDto) {
+    return this.databaseService.comment.create({
+      data: {
+        ...payload,
+        userId: userId,
+        novelId: id,
+      },
+    });
+  }
+
+  async addChapterComment(
+    id: number,
+    chapterId: number,
+    userId: number,
+    payload: CreateCommentDto,
+  ) {
+    return this.databaseService.comment.create({
+      data: {
+        ...payload,
+        chapterId,
+        userId: userId,
+        novelId: id,
+      },
+    });
+  }
+
+  async addChapter(id: number, userId: number, payload: CreateChapterDto) {
+    const novel = await this.databaseService.novel.findFirst({
+      where: { id: id },
+    });
+
+    if (novel.userId !== userId) {
+      throw new ForbiddenException();
+    }
+
+    const sameChapterName = await this.databaseService.chapter.findFirst({
+      where: {
+        novelId: id,
+        name: payload.name,
+      },
+    });
+
+    if (sameChapterName) {
+      throw new BadRequestException('Chapter name already exists');
+    }
+
+    return this.databaseService.chapter.create({
+      data: {
+        ...payload,
+        novelId: id,
+      },
+    });
+  }
+
+  async getComments(id: number) {
+    return this.databaseService.comment.findMany({
+      where: {
+        novelId: id,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
+
+  async getChapterComments(id: number, chapterId: number) {
+    return this.databaseService.comment.findMany({
+      where: {
+        novelId: id,
+        chapterId,
+      },
+      include: {
+        user: true,
       },
     });
   }

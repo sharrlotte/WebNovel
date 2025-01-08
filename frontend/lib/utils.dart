@@ -19,3 +19,6 @@ Future<T> catchError<T>(Function() fn) async {
 final Dio _dio = Dio(BaseOptions(baseUrl: dotenv.env['API_URL'] as String));
 
 Dio getApi() => _dio;
+
+const defaultImageLink =
+    "https://stock.adobe.com/search/images?k=default+avatar";

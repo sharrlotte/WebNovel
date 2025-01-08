@@ -15,11 +15,12 @@ class NovelChapterList extends StatefulWidget {
 }
 
 class _NovelChapterListState extends State<NovelChapterList> {
-  int page = 0;
+  int page = 1;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,11 +36,10 @@ class _NovelChapterListState extends State<NovelChapterList> {
         ),
         QueryClientBuilder(
             builder: (context, queryClient) =>
-                QueryBuilder<List<Chapter>, Error>([
-                  widget.novel.id,
-                  'chapters',
-                  page
-                ], () => Chapter.getChapters(novelId: widget.novel.id, page: 1),
+                QueryBuilder<List<Chapter>, Error>(
+                    [widget.novel.id, 'chapters', page],
+                    () => Chapter.getChapters(
+                        novelId: widget.novel.id, page: page),
                     refetchInterval: const Duration(seconds: 100),
                     builder: (context, data) {
                   var chapters = data.data;
@@ -49,7 +49,11 @@ class _NovelChapterListState extends State<NovelChapterList> {
                   }
 
                   if (data.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: CircularProgressIndicator()),
+                    );
                   }
 
                   if (chapters == null || chapters.isEmpty) {
@@ -57,24 +61,23 @@ class _NovelChapterListState extends State<NovelChapterList> {
                   }
 
                   return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: chapters
                           .map((chapter) => GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChapterPage(chapter: chapter),
-                                  ),
-                                );
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 10, bottom: 10),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChapterPage(chapter: chapter),
+                                    ),
+                                  );
+                                },
                                 child: Text(
                                   chapter.name,
+                                  textAlign: TextAlign.start,
                                 ),
-                              )))
+                              ))
                           .toList());
                 }))
       ],

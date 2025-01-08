@@ -139,7 +139,11 @@ class NovelPage extends StatelessWidget {
                 refetchInterval: const Duration(seconds: 100),
                 builder: (context, novels) {
               if (novels.isLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                  child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: CircularProgressIndicator()),
+                );
               }
 
               if (novels.isError) {
