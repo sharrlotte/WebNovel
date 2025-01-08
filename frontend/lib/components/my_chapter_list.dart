@@ -1,36 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:fquery/fquery.dart';
 import 'package:frontend/models/chapter.dart';
+import 'package:frontend/pages/add_chaper_page.dart';
 import 'package:frontend/pages/chapter_page.dart';
 
 import '../models/novel.dart';
 
-class NovelChapterList extends StatefulWidget {
+class MyNovelChapterList extends StatefulWidget {
   final Novel novel;
 
-  const NovelChapterList({super.key, required this.novel});
+  const MyNovelChapterList({super.key, required this.novel});
 
   @override
-  State<NovelChapterList> createState() => _NovelChapterListState();
+  State<MyNovelChapterList> createState() => _MyNovelChapterListState();
 }
 
-class _NovelChapterListState extends State<NovelChapterList> {
+class _MyNovelChapterListState extends State<MyNovelChapterList> {
   int page = 0;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'Danh sách Chapter:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            ElevatedButton(
+                style: const ButtonStyle(
+                    padding: WidgetStatePropertyAll(
+                        EdgeInsets.symmetric(horizontal: 10))),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddChapterPage(
+                        novel: widget.novel,
+                      ),
+                    ),
+                  );
+                },
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.add,
+                      size: 20,
+                    ),
+                    Text(
+                      "Thêm chương",
+                      style: TextStyle(fontSize: 12),
+                    )
+                  ],
+                )),
           ],
         ),
         QueryClientBuilder(

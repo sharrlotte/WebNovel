@@ -94,13 +94,6 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
                   Text(widget.novel.description),
                   const SizedBox(height: 16),
                   // Danh sách chapter
-                  const Text(
-                    'Danh sách Chapter:',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   NovelChapterList(novel: widget.novel),
                 ],
               ),

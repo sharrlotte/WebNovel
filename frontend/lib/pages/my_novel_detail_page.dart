@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/components/chapter_list.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:fquery/fquery.dart';
 import 'package:frontend/components/custom_app_bar.dart';
+import 'package:frontend/components/my_chapter_list.dart';
 import 'package:frontend/models/api.dart';
 import 'package:frontend/models/novel.dart';
 import 'package:image_picker/image_picker.dart';
@@ -44,17 +46,83 @@ class _MyNovelDetailPageState extends State<MyNovelDetailPage> {
             isEditing
                 ? EditNovel(novel: widget.novel)
                 : NovelInfo(novel: widget.novel),
-            NovelChapterList(novel: widget.novel),
+            MyNovelChapterList(novel: widget.novel),
           ],
         ),
       )),
-      floatingActionButton: ElevatedButton(
-          onPressed: () {
-            setState(() {
-              isEditing = !isEditing;
-            });
-          },
-          child: const Icon(Icons.edit)),
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: ExpandableFab(
+        type: ExpandableFabType.up,
+        distance: 50,
+        children: [
+          FloatingActionButton.small(
+            heroTag: null,
+            child: const Icon(Icons.delete),
+            onPressed: () {
+              AlertDialog alert = AlertDialog(
+                title: const Text("Xóa truyện"),
+                content: Text("Bạn có chắc chắn muốn xóa ${widget.novel.name}"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("Hủy")),
+                  QueryClientBuilder(
+                      builder: (context, queryClient) => TextButton(
+                          onPressed: () async {
+                            try {
+                              await Novel.deleteNovel(id: widget.novel.id);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Xóa thành công")));
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text(
+                                    "Đã xảy ra lỗi khi xóa truyện",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ));
+                              }
+                            }
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                              queryClient
+                                  .invalidateQueries(['novels'], exact: false);
+                              Navigator.pushNamed(context, '/my-novel');
+                            }
+                          },
+                          child: const Text(
+                            "Xác nhận",
+                            style: TextStyle(color: Colors.red),
+                          ))),
+                ],
+              );
+
+              // show the dialog
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
+          ),
+          FloatingActionButton.small(
+            heroTag: null,
+            child: const Icon(Icons.edit),
+            onPressed: () {
+              setState(() {
+                isEditing = !isEditing;
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -86,13 +154,17 @@ class NovelInfo extends StatelessWidget {
           ),
         ),
         Text('Tác giả: ${novel.author}'),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 8,
-          children: novel.categories
-              .map((tag) => Chip(label: Text(tag.name)))
-              .toList(),
-        ),
+        ...(novel.categories.isEmpty
+            ? []
+            : [
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 8,
+                  children: novel.categories
+                      .map((tag) => Chip(label: Text(tag.name)))
+                      .toList(),
+                ),
+              ]),
         const SizedBox(height: 16),
         const Text(
           'Trạng thái:',
@@ -113,13 +185,6 @@ class NovelInfo extends StatelessWidget {
         ),
         Text(novel.description),
         const SizedBox(height: 16),
-        const Text(
-          'Danh sách chapter:',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ],
     );
   }

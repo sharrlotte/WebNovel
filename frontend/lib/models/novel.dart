@@ -123,6 +123,14 @@ class Novel {
     });
   }
 
+  static Future<dynamic> deleteNovel({required int id}) {
+    return catchError(() async {
+      final res = await getApi().delete('/novels/$id');
+
+      return res;
+    });
+  }
+
   static Future<dynamic> updateNovel(
       {required int id,
       required String name,

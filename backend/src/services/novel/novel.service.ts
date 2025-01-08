@@ -243,9 +243,15 @@ export class NovelService {
 
   async remove(id: number, userId: number) {
     const novel = await this.findOne(id);
+
+    if (!novel) {
+      throw new NotFoundException(`Novel với ID ${id} không tồn tại`);
+    }
+
     if (novel.userId !== userId) {
       throw new ForbiddenException('Bạn không có quyền xóa novel này');
     }
+
     return this.databaseService.novel.delete({
       where: { id },
     });

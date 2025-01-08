@@ -177,7 +177,7 @@ class _UploadPageState extends State<UploadPage> {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                         content: Text(
-                                          "Đăng bài thành công",
+                                          "Đăng truyện thành công",
                                           style: TextStyle(color: Colors.green),
                                         ),
                                       ));
@@ -187,8 +187,9 @@ class _UploadPageState extends State<UploadPage> {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                         content: Text(
-                                          "Lỗi đăng bài: $e",
-                                          style: TextStyle(color: Colors.red),
+                                          "Lỗi đăng truyện: $e",
+                                          style: const TextStyle(
+                                              color: Colors.red),
                                         ),
                                       ));
                                     }
