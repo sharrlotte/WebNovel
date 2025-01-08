@@ -141,15 +141,20 @@ class Novel {
     });
   }
 
-  static Future<Novel> createNovel(
+  static Future<dynamic> createNovel(
       {required String name,
       required String description,
-      required String author}) {
+      required String author,
+      required String cover}) {
     return catchError(() async {
-      final res = await getApi().post('/novels',
-          data: {'name': name, 'description': description, 'author': author});
+      final res = await getApi().post('/novels', data: {
+        'name': name,
+        'description': description,
+        'author': author,
+        'cover': cover
+      });
 
-      return Novel.fromJson(res.data);
+      return (res.data);
     });
   }
 }

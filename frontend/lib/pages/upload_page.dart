@@ -127,7 +127,7 @@ class _UploadPageState extends State<UploadPage> {
                       children: [
                         QueryClientBuilder(
                             builder: (context, queryClient) => ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   if (nameController.text.isEmpty ||
                                       authorController.text.isEmpty ||
                                       descriptionController.text.isEmpty) {
@@ -143,12 +143,26 @@ class _UploadPageState extends State<UploadPage> {
                                     }
                                   }
 
+                                  if (cover.isEmpty) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                          "Vui lòng chọn ảnh bìa",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ));
+                                      return;
+                                    }
+                                  }
+
                                   try {
-                                    Novel.createNovel(
+                                    await Novel.createNovel(
                                         name: nameController.text,
                                         description: descriptionController.text,
-                                        author: authorController.text);
-                                        
+                                        author: authorController.text,
+                                        cover: cover);
+
                                     queryClient.invalidateQueries(['novels'],
                                         exact: false);
 

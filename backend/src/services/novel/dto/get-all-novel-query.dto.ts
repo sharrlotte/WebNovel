@@ -14,6 +14,9 @@ export class GetAllNovelQuery {
 }
 
 export const sortMapping = {
+  newest: {
+    updatedAt: 'desc',
+  },
   latest_update: {
     updatedAt: 'desc',
   },

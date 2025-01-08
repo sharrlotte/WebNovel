@@ -120,6 +120,8 @@ export class UsersService {
 
     if (sort) {
       s = sortMapping[sort];
+    } else {
+      s = sortMapping['latest_update'];
     }
 
     if (gene) {
@@ -177,6 +179,8 @@ export class UsersService {
 
     if (sort) {
       s = sortMapping[sort];
+    } else {
+      s = sortMapping['latest_update'];
     }
 
     if (gene) {

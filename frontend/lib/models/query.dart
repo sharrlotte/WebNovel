@@ -11,5 +11,5 @@ const List<Map<String, String>> status = [
   {'id': 'all', 'name': 'Tất cả'},
   {'id': 'COMPLETED', 'name': 'Hoàn thành'},
   {'id': 'ON_GOING', 'name': 'Đang tiến hành'},
-  {'id': 'PAUSE', 'name': 'Đã ngưng'},
+  {'id': 'PAUSED', 'name': 'Đã ngưng'},
 ];

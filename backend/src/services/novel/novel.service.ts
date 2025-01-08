@@ -23,7 +23,7 @@ export class NovelService {
       data: {
         ...createNovelDto,
         userId,
-        status: NovelStatus.ONGOING,
+        status: NovelStatus.ON_GOING,
       },
     });
   }
@@ -77,6 +77,8 @@ export class NovelService {
 
     if (sort) {
       s = sortMapping[sort];
+    } else {
+      s = sortMapping['latest_update'];
     }
 
     if (gene) {
@@ -143,6 +145,12 @@ export class NovelService {
           id: follow.id,
         },
       });
+
+      await this.databaseService.novel.update({
+        where: { id: id },
+        data: { followerCount: { decrement: 1 } },
+      });
+
       return { result: false };
     } else {
       await this.databaseService.follow.create({
@@ -151,6 +159,11 @@ export class NovelService {
           userId,
           createdAt: new Date(),
         },
+      });
+
+      await this.databaseService.novel.update({
+        where: { id: id },
+        data: { followerCount: { increment: 1 } },
       });
 
       return { result: true };
