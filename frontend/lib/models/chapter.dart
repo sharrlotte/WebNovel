@@ -28,6 +28,20 @@ class Chapter {
         comment: ((json['comment'] ?? 0) as int));
   }
 
+  static Future<List<Chapter>> getChapter({
+    required int id,
+  }) async {
+    return catchError(() async {
+      final res = await getApi().get(
+        '${dotenv.env['API_URL']}/chapters/$id',
+      );
+
+      final data = Chapter.fromJson(res.data as Map<String, dynamic>);
+
+      return data;
+    });
+  }
+
   static Future<List<Chapter>> getChapters({
     required int novelId,
     required int page,

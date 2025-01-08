@@ -12,6 +12,7 @@ import {
   sortMapping,
 } from 'src/services/novel/dto/get-all-novel-query.dto';
 import { SessionDto } from 'src/services/auth/dto/session.dto';
+import { NovelStatus } from 'src/services/novel/enums/novel-status.enum';
 
 @Injectable()
 export class NovelService {
@@ -22,10 +23,7 @@ export class NovelService {
       data: {
         ...createNovelDto,
         userId,
-        view: 0,
-        rating: 0,
-        followerCount: 0,
-        commentCount: 0,
+        status: NovelStatus.ONGOING,
       },
     });
   }
@@ -173,23 +171,6 @@ export class NovelService {
         throw new NotFoundException(`Novel với ID ${id} không tồn tại`);
       }
 
-      // Kiểm tra ID
-      if (updateNovelDto.id && updateNovelDto.id !== currentNovel.id) {
-        throw new BadRequestException('Bạn không được phép sửa ID của truyện');
-      }
-
-      // Kiểm tra createdAt
-      if ('createdAt' in updateNovelDto) {
-        const currentDate = new Date(currentNovel.createdAt).getTime();
-        const updateDate = new Date(updateNovelDto.createdAt).getTime();
-
-        if (currentDate !== updateDate) {
-          throw new BadRequestException(
-            'Bạn không được phép sửa ngày tạo của truyện',
-          );
-        }
-      }
-
       // Kiểm tra view
       if (
         'view' in updateNovelDto &&
@@ -201,16 +182,6 @@ export class NovelService {
       }
 
       // Kiểm tra updatedAt
-      if ('updatedAt' in updateNovelDto) {
-        const currentDate = new Date(currentNovel.updatedAt).getTime();
-        const updateDate = new Date(updateNovelDto.updatedAt).getTime();
-
-        if (currentDate !== updateDate) {
-          throw new BadRequestException(
-            'Bạn không được phép sửa ngày cập nhật của truyện',
-          );
-        }
-      }
 
       // Kiểm tra rating
       if (

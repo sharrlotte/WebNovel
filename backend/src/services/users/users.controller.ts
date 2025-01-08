@@ -7,7 +7,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { getSessionOrNull } from 'src/services/auth/auth.utils';
+import { getSession, getSessionOrNull } from 'src/services/auth/auth.utils';
 import { Request } from 'express';
 import { UsersService } from 'src/services/users/users.service';
 import { UserResponse } from 'src/services/users/dto/user.response';
@@ -41,10 +41,18 @@ export class UsersController {
   }
   @Get('@me/novels')
   getMyNovel(@Req() req: Request, @Query() query: GetAllNovelQuery) {
-    const session = this.getSession(req);
+    const session = getSession(req);
 
     return this.userService
       .getMyNovel(session, query)
+      .then((items) => items.map((item) => plainToInstance(NovelDto, item)));
+  }
+  @Get('@me/favorites')
+  getMyFavorites(@Req() req: Request, @Query() query: GetAllNovelQuery) {
+    const session = getSession(req);
+
+    return this.userService
+      .getMyFavorites(session, query)
       .then((items) => items.map((item) => plainToInstance(NovelDto, item)));
   }
 }

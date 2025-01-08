@@ -24,14 +24,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return QueryClientBuilder(builder: (context, queryClient) {
-      void _onRefresh() async {
-        queryClient.invalidateQueries(['novels']);
+      void onRefresh() async {
+        queryClient.invalidateQueries(['novels'], exact: false);
         _refreshController.refreshCompleted();
       }
 
-      void _onLoading() async {
-        await Future.delayed(Duration(milliseconds: 1000));
-        if (mounted) setState(() {});
+      void onLoading() async {
+        queryClient.invalidateQueries(['novels'], exact: false);
+
         _refreshController.loadComplete();
       }
 
@@ -59,8 +59,8 @@ class _HomePageState extends State<HomePage> {
             return Center(child: body);
           }),
           controller: _refreshController,
-          onRefresh: _onRefresh,
-          onLoading: _onLoading,
+          onRefresh: onRefresh,
+          onLoading: onLoading,
           footer: CustomFooter(
             builder: (BuildContext context, LoadStatus? mode) {
               Widget body;
@@ -146,11 +146,11 @@ class NovelPage extends StatelessWidget {
                 return Center(
                     child: Column(
                   children: [
+                    Text(novels.error?.toString() ?? 'Lõi'),
                     ElevatedButton(
                         onPressed: () =>
                             queryClient.invalidateQueries(['novels']),
                         child: const Text("Tải lại")),
-                    Text(novels.error?.toString() ?? 'Lõi')
                   ],
                 ));
               }

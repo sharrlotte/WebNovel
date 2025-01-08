@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/bloc/session_cubit.dart';
 import 'package:frontend/models/novel.dart';
-import 'package:frontend/pages/upload_novel_detail_page.dart';
+import 'package:frontend/pages/my_novel_detail_page.dart';
 
-class UploadNovelCard extends StatefulWidget {
+class MyNovelCard extends StatefulWidget {
   final Novel novel;
 
-  const UploadNovelCard({
+  const MyNovelCard({
     required super.key,
     required this.novel,
   });
 
   @override
-  State<UploadNovelCard> createState() => _UploadNovelCardState();
+  State<MyNovelCard> createState() => _MyNovelCardState();
 }
 
-class _UploadNovelCardState extends State<UploadNovelCard> {
+class _MyNovelCardState extends State<MyNovelCard> {
   @override
   void initState() {
     super.initState();
@@ -37,7 +37,7 @@ class _UploadNovelCardState extends State<UploadNovelCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => UploadNovelDetailPage(novel: widget.novel),
+            builder: (context) => MyNovelDetailPage(novel: widget.novel),
           ),
         );
       },

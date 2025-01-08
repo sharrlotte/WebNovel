@@ -34,6 +34,9 @@ class SessionCubit extends Cubit<SessionState> {
 
     storage.read(key: "session").then((session) {
       if (session != null) {
+        getApi().options.headers['Authorization'] =
+            "Bearer ${jsonDecode(session)['accessToken']}";
+
         emit(Authenticated(Session.fromJson(jsonDecode(session))));
       } else {
         emit(Unauthenticated());

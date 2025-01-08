@@ -38,6 +38,7 @@ import { LoggerModule } from 'nestjs-pino';
           target: 'pino-pretty',
         },
         level: 'info',
+        quietReqLogger: true,
       },
     }),
     NestjsFormDataModule.config({ isGlobal: true, storage: MemoryStoredFile }),

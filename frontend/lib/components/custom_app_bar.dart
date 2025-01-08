@@ -18,12 +18,28 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Navigator.pushNamed(context, '/login');
           break;
 
+        case "my-novel":
+          Navigator.pushNamed(context, '/my-novel');
+          break;
+
         case "upload":
           Navigator.pushNamed(context, '/upload');
           break;
 
+        case "history":
+          Navigator.pushNamed(context, '/history');
+          break;
+
+        case "favorites":
+          Navigator.pushNamed(context, '/favorites');
+          break;
+
         case "logout":
           await cubit.signOut();
+          break;
+
+        default:
+          Navigator.pushNamed(context, '/');
           break;
       }
     }
@@ -67,25 +83,128 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             itemBuilder: (BuildContext context) {
               final isLoggedIn = session is Authenticated;
               return [
-                const PopupMenuItem(value: "/", child: Text("Trang chủ")),
+                const PopupMenuItem(
+                    value: "/",
+                    child: Row(
+                      children: [Icon(Icons.home), Text("Trang chủ")],
+                    )),
                 ...(isLoggedIn
                     ? [
                         const PopupMenuItem(
-                            value: "logout", child: Text("Đăng Xuất")),
+                            value: "logout",
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.logout,
+                                  size: 20,
+                                ),
+                                SizedBox(
+                                  width: 2,
+                                ),
+                                Text("Đăng xuất")
+                              ],
+                            )),
                         const PopupMenuItem(
                             value: "downloads",
-                            child: Text("Truyện đã tải xuống")),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.download,
+                                  size: 22,
+                                ),
+                                SizedBox(
+                                  width: 2,
+                                ),
+                                Text("Truyện đã tải xuống")
+                              ],
+                            )),
                         const PopupMenuItem(
-                            value: "upload", child: Text("Truyện của tôi")),
+                            value: "favorites",
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.favorite,
+                                  size: 18,
+                                ),
+                                SizedBox(
+                                  width: 2,
+                                ),
+                                Text("Truyện đã theo dõi")
+                              ],
+                            )),
+                        const PopupMenuItem(
+                            value: "my-novel",
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.upload,
+                                  size: 22,
+                                ),
+                                SizedBox(
+                                  width: 2,
+                                ),
+                                Text("Truyện của tôi")
+                              ],
+                            )),
                       ]
                     : [
                         const PopupMenuItem(
-                            value: "login", child: Text("Đăng nhập")),
+                            value: "login",
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.login,
+                                  size: 22,
+                                ),
+                                SizedBox(
+                                  width: 2,
+                                ),
+                                Text("Đăng nhâp")
+                              ],
+                            )),
                       ]),
-                const PopupMenuItem(value: "news", child: Text("Tin tức")),
-                const PopupMenuItem(value: "fanpage", child: Text("Fanpage")),
                 const PopupMenuItem(
-                    value: "hidden_group", child: Text("Hội kín")),
+                    value: "history",
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.history,
+                          size: 22,
+                        ),
+                        SizedBox(
+                          width: 2,
+                        ),
+                        Text("Truyện đang đọc")
+                      ],
+                    )),
+                const PopupMenuItem(
+                    value: "news",
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.newspaper,
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: 2,
+                        ),
+                        Text("Tin tức")
+                      ],
+                    )),
+                const PopupMenuItem(
+                    value: "fanpage",
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.facebook,
+                          size: 22,
+                        ),
+                        SizedBox(
+                          width: 2,
+                        ),
+                        Text("Fan page")
+                      ],
+                    )),
               ];
             },
           );

@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fquery/fquery.dart';
 import 'package:frontend/models/chapter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils.dart';
 
@@ -13,6 +16,48 @@ class ChapterPage extends StatefulWidget {
 }
 
 class _ChapterPageState extends State<ChapterPage> {
+  @override
+  void initState() {
+    super.initState();
+    _saveReadingHistory();
+  }
+
+  Future<void> _saveReadingHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<Chapter>? history =
+        (prefs.getStringList('readingHistory') ?? []).map((e) {
+      final json = jsonDecode(e);
+
+      return Chapter.fromJson(json);
+    }).toList();
+
+    Chapter? chapter = history.cast<Chapter?>().firstWhere(
+        (h) => h?.novelId == widget.chapter.novelId,
+        orElse: () => null);
+
+    if (chapter == null) {
+      history.add(widget.chapter);
+    } else {
+      if (chapter.id < widget.chapter.id) {
+        history.remove(chapter);
+        history.add(widget.chapter);
+      }
+    }
+
+    await prefs.setStringList(
+        'readingHistory',
+        history
+            .map((e) => jsonEncode({
+                  'novelId': e.novelId,
+                  'id': e.id,
+                  'name': e.name,
+                  'createdAt': e.createdAt.toString(),
+                  'content': e.content,
+                  'comment': e.comment,
+                }))
+            .toList());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,6 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { NovelStatus } from '../novel-status.enum';
 import { Expose } from 'class-transformer';
 
 export class CreateNovelDto {
@@ -35,18 +34,4 @@ export class CreateNovelDto {
   @IsNotEmpty()
   @Expose()
   author: string;
-
-  @ApiProperty({
-    example: NovelStatus.ON_GOING,
-    description: 'Trạng thái truyện',
-    enum: NovelStatus,
-    enumName: 'NovelStatus',
-  })
-  @IsEnum(NovelStatus, {
-    message:
-      'Trạng thái truyện phải là: Đang tiến hành, Hoàn thành hoặc Tạm ngưng',
-  })
-  @Expose()
-  @IsNotEmpty()
-  status: NovelStatus;
 }

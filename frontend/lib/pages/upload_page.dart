@@ -1,179 +1,190 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fquery/fquery.dart';
-import 'package:frontend/components/novel_filters.dart';
-import 'package:frontend/components/upload_novel_card.dart';
+import 'package:frontend/main.dart';
+import 'package:frontend/models/api.dart';
 import 'package:frontend/models/novel.dart';
-import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
+
   @override
   State<UploadPage> createState() => _UploadPageState();
 }
 
 class _UploadPageState extends State<UploadPage> {
-  String _selectedSortTag = 'newest';
-  int? _selectedGenre;
-  String _selectedStatus = "all";
-  int page = 1;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController authorController = TextEditingController();
 
-  final RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  final ImagePicker _picker = ImagePicker();
+
+  String cover = "";
 
   @override
   Widget build(BuildContext context) {
-    return QueryClientBuilder(builder: (context, queryClient) {
-      void onRefresh() async {
-        queryClient.invalidateQueries(['novels'], exact: false);
-        _refreshController.refreshCompleted();
-      }
-
-      void onLoading() async {
-        if (mounted) setState(() {});
-        _refreshController.loadComplete();
-      }
-
-      return SmartRefresher(
-          enablePullDown: true,
-          enablePullUp: true,
-          header: CustomHeader(
-              builder: (BuildContext context, RefreshStatus? mode) {
-            Widget body;
-
-            if (mode == RefreshStatus.idle) {
-              body = const Text("Kéo lên để làm mới");
-            } else if (mode == RefreshStatus.refreshing) {
-              body = const CupertinoActivityIndicator();
-            } else if (mode == RefreshStatus.failed) {
-              body = const Text("Làm mới thất bải");
-            } else if (mode == RefreshStatus.canRefresh) {
-              body = const Text("Thả để tải thêm");
-            } else if (mode == RefreshStatus.completed) {
-              body = const Text("Tải lại thành công");
-            } else {
-              body = const Text("Không còn dữ liệu");
-            }
-
-            return Center(child: body);
-          }),
-          controller: _refreshController,
-          onRefresh: onRefresh,
-          onLoading: onLoading,
-          footer: CustomFooter(
-            builder: (BuildContext context, LoadStatus? mode) {
-              Widget body;
-
-              if (mode == LoadStatus.idle) {
-                body = const Text("Kéo lên để làm mới");
-              } else if (mode == LoadStatus.loading) {
-                body = const CupertinoActivityIndicator();
-              } else if (mode == LoadStatus.failed) {
-                body = const Text("Làm mới thất bải");
-              } else if (mode == LoadStatus.canLoading) {
-                body = const Text("Thả để tải thêm");
-              } else {
-                body = const Text("Không còn dữ liệu");
-              }
-
-              return Center(child: body);
-            },
-          ),
-          child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: SingleChildScrollView(
+    return NavScaffold(
+        body: SingleChildScrollView(
+            child: Padding(
+                padding: const EdgeInsets.all(10),
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Truyện của tôi"),
-                      NovelFilters(
-                        selectedSortTag: _selectedSortTag,
-                        selectedGenre: _selectedGenre,
-                        selectedStatus: _selectedStatus,
-                        onSortTagChanged: (tag) {
-                          setState(() {
-                            _selectedSortTag = tag;
-                          });
-                        },
-                        onGenreChanged: (genre) {
-                          setState(() {
-                            _selectedGenre = genre;
-                          });
-                        },
-                        onStatusSelected: (status) {
-                          setState(() {
-                            _selectedStatus = status;
-                          });
-                        },
-                      ),
-                      MyNovelPage(
-                        sort: _selectedSortTag,
-                        gene: _selectedGenre,
-                        status: _selectedStatus,
-                      )
-                    ]),
-              )));
-    });
-  }
-}
-
-class MyNovelPage extends StatelessWidget {
-  final String sort;
-  final int? gene;
-  final String status;
-
-  const MyNovelPage(
-      {super.key,
-      required this.sort,
-      required this.gene,
-      required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    return QueryClientBuilder(
-        builder: (context, queryClient) => QueryBuilder<List<Novel>, Error>(
-                ['novels', sort, gene, status],
-                () => Novel.getMyNovels(sort: sort, gene: gene, status: status),
-                refetchInterval: const Duration(seconds: 100),
-                builder: (context, novels) {
-              if (novels.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (novels.isError) {
-                return Center(
-                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    ElevatedButton(
-                        onPressed: () =>
-                            queryClient.invalidateQueries(['novels']),
-                        child: const Text("Tải lại")),
-                    Text(novels.error?.toString() ?? 'Lõi')
+                    TextButton(
+                        style: const ButtonStyle(
+                            padding: WidgetStatePropertyAll(EdgeInsets.zero)),
+                        onPressed: () async {
+                          final XFile? file = await _picker.pickImage(
+                              source: ImageSource.gallery);
+
+                          if (file == null) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text(
+                                  "Vui lòng chọn một ảnh",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ));
+                            }
+                            return;
+                          }
+
+                          try {
+                            var url = await Api.uploadImage(file);
+
+                            setState(() {
+                              cover = url;
+                            });
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                  "Lỗi tải ảnh: $e",
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                              ));
+                            }
+                          }
+                        },
+                        child: cover.isEmpty
+                            ? const Row(
+                                children: [
+                                  Icon(Icons.image),
+                                  Text("Đăng ảnh bìa")
+                                ],
+                              )
+                            : Container(
+                                height: 200,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: NetworkImage(cover),
+                                      fit: BoxFit.contain),
+                                ),
+                              )),
+                    TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Tên',
+                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextField(
+                        controller: authorController,
+                        decoration: const InputDecoration(
+                          labelText: 'Tác giả',
+                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Row(
+                      children: [
+                        Text(
+                          "Trạng thái",
+                          textAlign: TextAlign.start,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextField(
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        controller: descriptionController,
+                        decoration: const InputDecoration(
+                          labelText: 'Mô tả',
+                        )),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        QueryClientBuilder(
+                            builder: (context, queryClient) => ElevatedButton(
+                                onPressed: () {
+                                  if (nameController.text.isEmpty ||
+                                      authorController.text.isEmpty ||
+                                      descriptionController.text.isEmpty) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                          "Vui lòng nhập đủ thông tin",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ));
+                                      return;
+                                    }
+                                  }
+
+                                  try {
+                                    Novel.createNovel(
+                                        name: nameController.text,
+                                        description: descriptionController.text,
+                                        author: authorController.text);
+                                        
+                                    queryClient.invalidateQueries(['novels'],
+                                        exact: false);
+
+                                    setState(() {
+                                      cover = "";
+                                      nameController.clear();
+                                      authorController.clear();
+                                      descriptionController.clear();
+                                    });
+
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                          "Đăng bài thành công",
+                                          style: TextStyle(color: Colors.green),
+                                        ),
+                                      ));
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text(
+                                          "Lỗi đăng bài: $e",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ));
+                                    }
+                                  }
+                                },
+                                child: const Row(
+                                    children: [Icon(Icons.save), Text("Lưu")])))
+                      ],
+                    )
                   ],
-                ));
-              }
-
-              final data = novels.data;
-
-              if (data == null || data.isEmpty) {
-                return const Text("No result");
-              }
-
-              return GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 15,
-                    crossAxisSpacing: 15,
-                    crossAxisCount: 2),
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return UploadNovelCard(
-                    key: Key(data[index].id.toString()),
-                    novel: data[index],
-                  );
-                },
-              );
-            }));
+                ))));
   }
 }

@@ -162,4 +162,58 @@ export class UsersService {
       isFollowing: item.follows?.length === 1,
     }));
   }
+
+  async getMyFavorites(session: SessionDto, query: GetAllNovelQuery) {
+    const { status, sort, gene, page } = query;
+
+    let q = {};
+    let s = undefined;
+
+    if (status && status !== 'all') {
+      q = {
+        status: status,
+      };
+    }
+
+    if (sort) {
+      s = sortMapping[sort];
+    }
+
+    if (gene) {
+      q = {
+        ...q,
+        categories: {
+          some: {
+            category: {
+              id: parseInt(gene),
+            },
+          },
+        },
+      };
+    }
+
+    const result = await this.prisma.novel.findMany({
+      where: {
+        ...q,
+        userId: session.id,
+        follows: {
+          every: {
+            userId: session.id,
+          },
+        },
+      },
+      orderBy: s,
+      include: {
+        user: true,
+        categories: true,
+      },
+      skip: 20 * (page - 1),
+      take: 20,
+    });
+
+    return result.map((item) => ({
+      ...item,
+      isFollowing: true,
+    }));
+  }
 }

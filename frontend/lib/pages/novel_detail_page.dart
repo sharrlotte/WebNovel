@@ -21,7 +21,7 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
   void initState() {
     super.initState();
 
-    isFollowed = true;
+    isFollowed = widget.novel.isFollowing;
   }
 
   @override
