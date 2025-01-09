@@ -58,15 +58,20 @@ class MyApp extends StatelessWidget {
 class NavScaffold extends StatelessWidget {
   final Widget body;
   final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
-  const NavScaffold({super.key, required this.body, this.floatingActionButton});
+  const NavScaffold(
+      {super.key,
+      required this.body,
+      this.floatingActionButton,
+      this.floatingActionButtonLocation});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
-      body: body,
-      floatingActionButton: floatingActionButton,
-    );
+        appBar: const CustomAppBar(),
+        body: body,
+        floatingActionButton: floatingActionButton,
+        floatingActionButtonLocation: floatingActionButtonLocation);
   }
 }

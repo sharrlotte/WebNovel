@@ -4,9 +4,19 @@ import 'package:fquery/fquery.dart';
 import 'package:frontend/bloc/session_cubit.dart';
 import 'package:frontend/models/novel.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:frontend/pages/novel_detail_page.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
+
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     void onMenuSelected(value) async {
@@ -61,14 +71,42 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       backgroundColor: Colors.white,
       actions: [
-        Container(
-            margin: const EdgeInsets.symmetric(horizontal: 5),
-            child: IconButton(
-              icon: const Icon(Icons.search, color: Colors.black),
-              onPressed: () {
-                //TODO: Xử lý tìm kiếm
+        SearchAnchor(
+            builder: (BuildContext context, SearchController controller) {
+          return GestureDetector(
+            onTap: () {
+              controller.openView();
+            },
+            child: Icon(Icons.search),
+          );
+        }, suggestionsBuilder:
+                (BuildContext context, SearchController controller) async {
+          final result = await Novel.search(name: controller.text);
+
+          return List<ListTile>.generate(result.length, (int index) {
+            final String item = result[index].name;
+            return ListTile(
+              leading: Image(
+                  width: 50,
+                  fit: BoxFit.cover,
+                  image: NetworkImage(result[index].cover)),
+              title: Text(item),
+              onTap: () {
+                setState(() {
+                  controller.closeView(item);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              NovelDetailPage(novel: result[index])));
+                });
               },
-            )),
+            );
+          });
+        }),
+        const SizedBox(
+          width: 10,
+        ),
         BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
           if (session is Authenticated) {
             final avatar = session.session.user.avatar;
@@ -280,7 +318,4 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

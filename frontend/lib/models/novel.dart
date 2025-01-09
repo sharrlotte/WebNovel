@@ -214,6 +214,20 @@ class Novel {
       return (res.data);
     });
   }
+
+  static Future<List<Novel>> search({required String name}) {
+    return catchError(() async {
+      final res = await getApi().get('/novels/search', queryParameters: {
+        'q': name,
+      });
+
+      final data = (res.data as List)
+          .map((e) => Novel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      return data;
+    });
+  }
 }
 
 class NewNovel {

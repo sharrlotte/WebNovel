@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/chapter_list.dart';
 import 'package:frontend/components/comment_list.dart';
-import 'package:frontend/components/custom_app_bar.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/models/novel.dart';
 
 import '../models/query.dart';
@@ -27,8 +27,7 @@ class _NovelDetailPageState extends State<NovelDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(),
+    return NavScaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

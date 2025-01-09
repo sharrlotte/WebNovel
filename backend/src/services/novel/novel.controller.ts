@@ -42,6 +42,14 @@ export class NovelController {
     );
   }
 
+  @Get('/search')
+  async search(@Query('q') q: string) {
+    const data = await this.novelService
+      .search(q)
+      .then((items) => items.map((item) => plainToInstance(NovelDto, item)));
+
+    return data;
+  }
   @Get()
   async findAll(@Query() query: GetAllNovelQuery, @Req() req: Request) {
     const session = getSessionOrNull(req);

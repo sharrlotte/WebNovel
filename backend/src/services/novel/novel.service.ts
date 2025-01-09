@@ -72,6 +72,24 @@ export class NovelService {
     });
   }
 
+  async search(q: string) {
+    
+    if (!q || q.length === 0) {
+      return await this.databaseService.novel.findMany({
+        take: 10,
+      });
+    }
+
+    return this.databaseService.novel.findMany({
+      where: {
+        name: {
+          contains: q,
+        },
+      },
+      take: 10,
+    });
+  }
+
   async findAll(query: GetAllNovelQuery, session: SessionDto) {
     const { status, sort, gene, page } = query;
 

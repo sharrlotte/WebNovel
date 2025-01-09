@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:fquery/fquery.dart';
 import 'package:frontend/components/comment_list.dart';
-import 'package:frontend/components/custom_app_bar.dart';
 import 'package:frontend/components/my_chapter_list.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/models/api.dart';
 import 'package:frontend/models/category.dart';
 import 'package:frontend/models/novel.dart';
@@ -37,8 +37,7 @@ class _MyNovelDetailPageState extends State<MyNovelDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(),
+    return NavScaffold(
       body: SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
