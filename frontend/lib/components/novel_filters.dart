@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fquery/fquery.dart';
 import 'package:frontend/models/category.dart';
 import 'package:frontend/models/query.dart';
-import 'package:frontend/utils.dart';
 
 class NovelFilters extends StatelessWidget {
   final String selectedSortTag;
@@ -12,20 +10,6 @@ class NovelFilters extends StatelessWidget {
   final Function(int?) onGenreChanged;
   final Function(String) onSortTagChanged;
   final Function(String) onStatusSelected;
-
-  Future<List<Category>> getCategories() async {
-    return catchError(() async {
-      final res = await getApi().get(
-        '${dotenv.env['API_URL']}/categories',
-      );
-
-      final data = (res.data as List)
-          .map((e) => Category.fromJson(e as Map<String, dynamic>))
-          .toList();
-
-      return data;
-    });
-  }
 
   const NovelFilters(
       {super.key,
@@ -40,7 +24,7 @@ class NovelFilters extends StatelessWidget {
   Widget build(BuildContext context) {
     return QueryBuilder(
         const ['categories'], //
-        getCategories, //
+        Category.getCategories, //
         builder: (context, categories) {
       List<Category> data = categories.isLoading
           ? []

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fquery/fquery.dart';
 import 'package:frontend/bloc/session_cubit.dart';
+import 'package:frontend/models/novel.dart';
+import 'package:badges/badges.dart' as badges;
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -32,6 +35,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
         case "favorites":
           Navigator.pushNamed(context, '/favorites');
+          break;
+
+        case "category":
+          Navigator.pushNamed(context, '/category');
           break;
 
         case "logout":
@@ -72,6 +79,39 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             } else {
               return const CircleAvatar();
             }
+          }
+
+          return Container();
+        }),
+        const SizedBox(width: 10),
+        BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
+          if (session is Authenticated) {
+            return QueryBuilder(const ['new-chapter'], Novel.getNewNovel,
+                builder: (context, query) {
+              final data = query.data;
+              final count = data == null || data.isEmpty
+                  ? 0
+                  : data
+                      .map((e) => e.chapters.length)
+                      .reduce((result, e) => result + e);
+
+              if (count == 0) {
+                return Container();
+              }
+
+              return TextButton(
+                child: badges.Badge(
+                  badgeContent: Text(
+                    count.toString(),
+                    style: const TextStyle(fontSize: 9, color: Colors.white),
+                  ),
+                  child: const Icon(Icons.notifications),
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/new-chapter");
+                },
+              );
+            });
           }
 
           return Container();
@@ -203,6 +243,34 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           width: 2,
                         ),
                         Text("Fan page")
+                      ],
+                    )),
+              ];
+            },
+          );
+        }),
+        BlocBuilder<SessionCubit, SessionState>(builder: (context, session) {
+          if (session is! Authenticated ||
+              !session.session.user.roles.contains("ADMIN")) {
+            return Container();
+          }
+          return PopupMenuButton<String>(
+            icon: const Icon(Icons.admin_panel_settings, color: Colors.black),
+            onSelected: onMenuSelected,
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem(
+                    value: "category",
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.category,
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: 2,
+                        ),
+                        Text("Quản lý thể loại")
                       ],
                     )),
               ];

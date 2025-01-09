@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fquery/fquery.dart';
 import 'package:frontend/bloc/session_cubit.dart';
 import 'package:frontend/components/custom_app_bar.dart';
+import 'package:frontend/pages/category_page.dart';
 import 'package:frontend/pages/favorites_page.dart';
 import 'package:frontend/pages/history_page.dart';
-import 'package:frontend/pages/my-novel_page.dart';
+import 'package:frontend/pages/my_novel_page.dart';
+import 'package:frontend/pages/new_chapter_page.dart';
 import 'package:frontend/pages/upload_page.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
@@ -43,6 +45,8 @@ class MyApp extends StatelessWidget {
                       const NavScaffold(body: HistoryPage()),
                   "/favorites": (context) =>
                       const NavScaffold(body: FavoritesPage()),
+                  "/new-chapter": (context) => const NewChapterPage(),
+                  "/category": (context) => const CategoryPage()
                 },
               )));
     } catch (e) {

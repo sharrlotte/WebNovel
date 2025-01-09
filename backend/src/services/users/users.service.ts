@@ -170,6 +170,83 @@ export class UsersService {
     }));
   }
 
+  async getNewNovels(session: SessionDto) {
+    const latestViewedChapters = await this.prisma.view.groupBy({
+      by: ['novelId'],
+      where: {
+        userId: session.id,
+      },
+      _max: {
+        chapterId: true,
+      },
+    });
+
+    const result = await this.prisma.novel.findMany({
+      where: {
+        OR: latestViewedChapters.map((view) => ({
+          id: view.novelId,
+          chapters: {
+            some: {
+              id: {
+                gt: view._max.chapterId,
+              },
+              View: {
+                none: {
+                  userId: session.id,
+                },
+              },
+            },
+          },
+          follows: {
+            some: {
+              userId: session.id,
+            },
+          },
+        })),
+      },
+      include: {
+        chapters: {
+          where: {
+            OR: latestViewedChapters.map((view) => ({
+              novelId: view.novelId,
+              id: {
+                gt: view._max.chapterId,
+              },
+              View: {
+                none: {
+                  userId: session.id,
+                },
+              },
+            })),
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        },
+        user: true,
+        categories: {
+          select: {
+            category: true,
+          },
+        },
+        follows:
+          session === null
+            ? false
+            : {
+                where: {
+                  userId: session.id,
+                },
+              },
+      },
+    });
+
+    return result.map((item) => ({
+      ...item,
+      categories: item.categories.map((c) => c.category),
+      isFollowing: item.follows?.length === 1,
+    }));
+  }
+
   async getMyFavorites(session: SessionDto, query: GetAllNovelQuery) {
     const { status, sort, gene, page } = query;
 

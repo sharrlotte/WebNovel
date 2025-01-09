@@ -94,7 +94,12 @@ class SessionCubit extends Cubit<SessionState> {
   }
 
   Future<void> signOut() async {
-    emit(Unauthenticated());
+    const storage = FlutterSecureStorage();
+
     await googleSignIn.signOut();
+
+    storage.delete(key: "session");
+
+    emit(Unauthenticated());
   }
 }

@@ -22,4 +22,18 @@ class Category {
           .toList();
     });
   }
+
+  static Future<Category> createCategory(String name) {
+    return catchError(() async {
+      final res = await getApi().post('/categories', data: {'name': name});
+
+      return Category.fromJson(res.data);
+    });
+  }
+
+  static Future<dynamic> deleteCategory(int id) {
+    return catchError(() async {
+      await getApi().delete('/categories/$id');
+    });
+  }
 }

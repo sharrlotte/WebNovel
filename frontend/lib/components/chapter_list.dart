@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fquery/fquery.dart';
+import 'package:frontend/components/paginator.dart';
 import 'package:frontend/models/chapter.dart';
 import 'package:frontend/pages/chapter_page.dart';
 
@@ -62,23 +63,32 @@ class _NovelChapterListState extends State<NovelChapterList> {
 
                   return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: chapters
-                          .map((chapter) => GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChapterPage(chapter: chapter),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  chapter.name,
-                                  textAlign: TextAlign.start,
-                                ),
-                              ))
-                          .toList());
+                      children: [
+                        ...chapters
+                            .map((chapter) => GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChapterPage(chapter: chapter),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    chapter.name,
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ))
+                            .toList(),
+                        Paginator(
+                            page: page,
+                            size: chapters.length,
+                            maxSize: 20,
+                            onPageChanged: (newPage) => setState(() {
+                                  page = newPage;
+                                }))
+                      ]);
                 }))
       ],
     );

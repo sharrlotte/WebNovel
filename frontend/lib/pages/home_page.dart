@@ -25,13 +25,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return QueryClientBuilder(builder: (context, queryClient) {
       void onRefresh() async {
-        queryClient.invalidateQueries(['novels'], exact: false);
+        queryClient.invalidateQueries([], exact: false);
         _refreshController.refreshCompleted();
       }
 
       void onLoading() async {
-        queryClient.invalidateQueries(['novels'], exact: false);
-
         _refreshController.loadComplete();
       }
 

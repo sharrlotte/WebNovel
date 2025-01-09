@@ -1,4 +1,5 @@
 import 'package:frontend/models/category.dart';
+import 'package:frontend/models/chapter.dart';
 import 'package:frontend/models/comment.dart';
 import 'package:frontend/utils.dart';
 
@@ -29,7 +30,6 @@ class Novel {
       required this.isFollowing});
 
   static Novel fromJson(Map<String, dynamic> data) {
-    print(data);
     return Novel(
         id: data['id'],
         name: data['name'],
@@ -86,6 +86,18 @@ class Novel {
 
       final data = (res.data as List)
           .map((e) => Novel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      return data;
+    });
+  }
+
+  static Future<List<NewNovel>> getNewNovel() async {
+    return catchError(() async {
+      final res = await getApi().get('/users/@me/new-novels');
+
+      final data = (res.data as List)
+          .map((e) => NewNovel.fromJson(e as Map<String, dynamic>))
           .toList();
 
       return data;
@@ -201,5 +213,74 @@ class Novel {
 
       return (res.data);
     });
+  }
+}
+
+class NewNovel {
+  final int id;
+  String name;
+  String cover;
+  String description;
+  String author;
+  String status;
+  int commentCount;
+  int view;
+  bool isFollowing;
+  final String createdAt;
+  List<Category> categories;
+  List<Chapter> chapters;
+
+  NewNovel({
+    required this.id,
+    required this.name,
+    required this.cover,
+    required this.author,
+    required this.description,
+    required this.createdAt,
+    required this.status,
+    required this.commentCount,
+    required this.view,
+    required this.categories,
+    required this.isFollowing,
+    required this.chapters,
+  });
+
+  static NewNovel fromJson(Map<String, dynamic> data) {
+    return NewNovel(
+        id: data['id'],
+        name: data['name'],
+        cover: data['cover'],
+        description: data['description'],
+        author: data['author'],
+        createdAt: data['createdAt'],
+        status: data['status'] ?? 'COMPLETED',
+        isFollowing: data['isFollowing'] ?? false,
+        commentCount: data['commentCount'] ?? 0,
+        view: data['view'] ?? 0,
+        categories: (data['categories'] ?? [])
+            .map((e) => Category.fromJson(e))
+            .cast<Category>()
+            .toList(),
+        chapters: (data['chapters'] ?? [])
+            .map((e) => Chapter.fromJson(e))
+            .cast<Chapter>()
+            .toList() //
+        );
+  }
+
+  Novel toNovel() {
+    return Novel(
+      id: id,
+      name: name,
+      cover: cover,
+      description: description,
+      author: author,
+      createdAt: createdAt,
+      status: status,
+      commentCount: commentCount,
+      view: view,
+      categories: categories,
+      isFollowing: true,
+    );
   }
 }

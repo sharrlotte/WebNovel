@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fquery/fquery.dart';
+import 'package:frontend/components/paginator.dart';
 import 'package:frontend/models/chapter.dart';
 import 'package:frontend/pages/add_chaper_page.dart';
 import 'package:frontend/pages/chapter_page.dart';
@@ -88,9 +89,6 @@ class _MyNovelChapterListState extends State<MyNovelChapterList> {
                     return const Text("Không có chương");
                   }
 
-                  final hasNextPage = chapters.length == 20;
-                  final hasPreviousPage = page > 1;
-
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -114,45 +112,13 @@ class _MyNovelChapterListState extends State<MyNovelChapterList> {
                                     ),
                                   ))
                               .toList()),
-                      Row(
-                        children: [
-                          hasPreviousPage
-                              ? Expanded(
-                                  child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      page--;
-                                    });
-                                  },
-                                  child: Text('Quay lại'),
-                                ))
-                              : Container(),
-                          const SizedBox(width: 8),
-                          hasNextPage
-                              ? Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        page++;
-                                      });
-                                    },
-                                    child: Text('Load thêm'),
-                                  ),
-                                )
-                              : Container(),
-                          const SizedBox(width: 8),
-                          page != 1
-                              ? ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      page = 1;
-                                    });
-                                  },
-                                  child: Text('Quay về đầu'),
-                                )
-                              : Container(),
-                        ],
-                      )
+                      Paginator(
+                          page: page,
+                          size: chapters.length,
+                          maxSize: 20,
+                          onPageChanged: (newPage) => setState(() {
+                                page = newPage;
+                              }))
                     ],
                   );
                 }))

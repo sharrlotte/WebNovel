@@ -11,10 +11,10 @@ export class SessionDto {
   avatar: string | null;
 
   @Expose()
-  roles: string[];
+  roles: string[] = [];
 
   @Expose()
-  authorities: string[];
+  authorities: string[] = [];
 }
 
 export class SessionResponseDto extends SessionDto {

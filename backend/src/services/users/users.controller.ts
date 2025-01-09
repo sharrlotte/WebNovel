@@ -14,6 +14,7 @@ import { UserResponse } from 'src/services/users/dto/user.response';
 import { SessionResponseDto } from 'src/services/auth/dto/session.dto';
 import NovelDto from 'src/services/novel/dto/novel.dto';
 import { GetAllNovelQuery } from 'src/services/novel/dto/get-all-novel-query.dto';
+import NewNovelDto from 'src/services/users/dto/new-novel.dto';
 
 @Controller('users')
 export class UsersController {
@@ -54,5 +55,13 @@ export class UsersController {
     return this.userService
       .getMyFavorites(session, query)
       .then((items) => items.map((item) => plainToInstance(NovelDto, item)));
+  }
+  @Get('@me/new-novels')
+  getNewNovels(@Req() req: Request) {
+    const session = getSession(req);
+
+    return this.userService
+      .getNewNovels(session)
+      .then((items) => items.map((item) => plainToInstance(NewNovelDto, item)));
   }
 }
